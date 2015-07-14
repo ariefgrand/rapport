@@ -1,0 +1,24 @@
+\chapter{Introduction}
+\OnehalfSpacing
+\setlength{\parindent}{2em}
+Etant actuellement en dernière année d'un diplôme d'ingénieur Informatique Industrielle et Instrumentation (3I) au sein de Polytech'Grenoble, j'ai effectué un stage de 6 mois dans le laboratoire TIMA INP Grenoble. Le stage s'est déroulé sous la direction de Alban BOURGE (Doctorant), Frédéric ROUSSEAU et Olivier MULLER. Mon sujet de stage était: "Mise en œuvre d'un environnement de validation pour la migration de tâches sur FPGA".
+
+Ce stage m'a permis de faire un travail d'ingénierie ainsi que de découvrir le monde de la recherche
+dans un laboratoire international. Je souhaitais faire ce stage au sein d'un laboratoire tel que TIMA dans l'équipe System Level Synthesis, pour obtenir une bonne compétence et expérience sur un sujet de PFE, notamment sur le développement d'architecture sur une plateforme reconfigurable comme FPGA. 
+
+L'objectif de ce stage étant de valider un mécanisme de sélection des points d'arrêts de l'exécution d'un traitement sur FPGA ainsi que d'évaluer ses performances. 
+Ce mécanisme est envisagé dans le cadre du développement d'un environnement basé sur cloud-FPGA. Le but est de pouvoir arrêter une exécution d'un traitement sur un FPGA et de continuer l'exécution sur un autre FPGA connecté au même réseau\footnote{Context Switch ou Changement de Contexte}. L'idée sous-jacente est de pouvoir arrêter une tâche sur un FPGA et de transférer la suite de l'exécution sur un autre FPGA. Le mécanisme mentionné a été simulé par M. Bourge, il nous reste donc la validation sur une plateforme. La plateforme ZYBO a été prise car elle utilise un système sur puce\footnote{System-on-Chip} qui permet de manipuler la partie programmable du FPGA automatiquement, grâce à un système d'exploitation qui tourne sur l'ARM de ZYBO.
+
+Dans le cadre de sa thèse, M.Alban Bourge a proposé une méthode qui permet de faire le changement de contexte depuis l'étape de synthèse de l'IP\footnote{Intelectual Property ou Propriété Intellectuelle}. 
+Afin de réaliser cette idée, la méthode est développée comme une extension d'un outil de synthèse haut niveau en raison de performance et d'efficacité. AUGH\cite{Aughweb,Prost2014}, un logiciel utilisé dans la thèse de Alban Bourge, est développé par un chercheur postdoctoral comme un outil open-source qui peut générer des IP depuis un programme écrit en langage C. L'utilisation de l'extension sur AUGH nous permet de générer un IP qui supporte les récupération et restoration de contexte sur FPGA. En exécutant cet IP sur FPGA, nous pourrions arrêter son traitement et continuer sur un autre FPGA. 
+
+Dans le cadre de ce stage, j'ai eu pour mission de configurer une plateforme sur un FPGA permettant les fonctions suivantes :
+\begin{itemize}
+\item exécuter des IP,
+\item arrêter l'execution d'un traitement,
+\item récupérer le contexte,
+\item transférer le contexte vers le FPGA destination,
+\item reprendre de l'execution.
+\end{itemize}
+
+Dans ce rapport de stage, je présenterais en générale le laboratoire TIMA ainsi que l'équipe SLS avec laquelle j'ai effectué mon stage. Ensuite, je présenterais la gestion et le déroulement du stage. Dans le chapitre suivant, je ferais une présentation des problèmes et des solutions que j'ai proposées pour répondre aux besoins demandés. Et enfin, je finirais avec une conclusion de ce rapport de stage.
