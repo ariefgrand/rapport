@@ -4,6 +4,7 @@
 \checkandfixthelayout
 
 \usepackage[pdfpagelabels]{hyperref}
+\usepackage{pdfpages}
 \usepackage{memhfixc}
 \usepackage{amsmath}
 \usepackage{ragged2e}
@@ -58,7 +59,11 @@
 \clearpage
 \include{gestion}
 \clearpage
-\include{resolution}
+\include{principe}
+\clearpage
+\include{conception}
+\clearpage
+\include{resultat}
 \clearpage
 \include{conclusion}
 \backmatter
@@ -66,9 +71,11 @@
 \bibliographystyle{acm}
 \bibliography{memoir}
 
-\appendix
+
 \addtocontents{toc}{\setlength\cftchapternumwidth{1em}}
-\chapter{How to use}
+
+\includepdf[pages=-,addtotoc={1,chapter,1,Annexe 1 - Paper,annexe1}]{paper}
+
 \include{dos}
 
 \end{document}
