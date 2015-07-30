@@ -1,7 +1,27 @@
 \chapter{Conception}
+\label{chap:concep}
+\OnehalfSpacing
+
+This section describes the architecture of the system we built using FPGA in order to validate the behaviour of the circuit
+obtained from the HLS tool AUGH.
+As explained in the previous section, directly programming a circuit in the FPGA will be relatively less time-consuming than
+launching a simulation with post-routing timing annotations. It will run with the same frequency of FPGA and thus will show
+the real performance of the circuit.
 
 \section{Architecture Matérielle}
 
+\begin{figure}[h]
+	\label{fig:system}
+	\centering
+	\includegraphics[width=\textwidth]{schemasystem}
+	\caption{Schéma du Système Global \cite{Brisebard2015}}
+	\vspace{-2mm}
+\end{figure}
+
+
+
 \section{Architecture Logicielle}
+
+
 
 \section[Intéraction entre Les Deux]{Intéraction entre Les Architectures Matérielles et Logicielles}

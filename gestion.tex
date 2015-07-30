@@ -1,14 +1,87 @@
 \chapter{Description du Sujet et Gestion de Stage}
 \label{chap:sujet}
+\OnehalfSpacing
 
-Avant de commencer à travailler, j'ai du faire un planning du projet. Il s'agit de décomposer le travail à
-effectuer en plusieurs phases et à déterminer la durée de chacune.
+\section{Description du Sujet de Stage}
+\label{sec:sujet}
 
-La première partie est 
+Le laboratoire TIMA développe un mécanisme de sélection des points
+d'arrêts de l'exécution d'un traitement sur un FPGA. L'idée sous-jacente
+est de pouvoir arrêter une tâche sur un FPGA et de transférer la suite de
+l'exécution sur un autre FPGA.
+Ce mécanisme est connu sur le système à base de CPU 
+en tant que \emph{context switch} ou "commutation de contexte".
+Un contexte sur FPGA est définie comme une image de l'état des circuits configurés dans le FPGA.
+
+La commutation de contexte en informatique consiste à sauvegarder
+l'état d'un processus pour restaurer à la place d'un autre dans le cadre de l'ordonnancement 
+d'un système d'exploitation. La commutation de contexte sur FPGA (cf. Section \ref{sec:contextswitch}) 
+effectue un traitement similaire sur des circuits logiques au lieu d'un système d'exploitation. 
+Elle est possible grâce aux blocs logiques programmables
+qui construisent la plateforme FPGA.
+
+Dans le cadre de sa thèse au laboratoire TIMA, M. Alban Bourge a proposé une méthode de la commutation 
+de contexte sur FPGA par l'extraction de l'image de l'état sur certains points de contrôle\cite{Bourge2015}. 
+Un algorithme a été ajouté à chaque IP\footnote{\emph{Intelectual Property}, dans ce contexte est le circuit programmé sur FPGA} synthétisé
+afin de choisir le meilleur point de contrôle selon les contraintes donnés par l'utilisateur.
+Lors de la synthèse logique, l'IP est modifié afin qu'il puisse effectuer la commutation de contexte.
+
+La réalisation de cette méthode a été faite par une méthode intégrée dans un outil de synthèse de haut niveau.
+Ceci est réalisable grâce à un outil de synthèse logique de haut-niveau AUGH\cite{Prost2014} 
+qui a été développé par un chercheur postdoctoral au laboratoire TIMA.
+Le AUGH est capable de générer des IP 
+depuis un programme écrit en langage C. L'intégration de la méthode proposée par M. Alban Bourge sur AUGH 
+nous permet de générer un IP qui supporte les récupérations et restaurations de contexte sur FPGA.
+
+Pendant le projet 3i5, une plateforme a été construite pour valider des IP générés par AUGH automatiquement\cite{Brisebard2015}.
+Cette plateforme de validation consiste à un environnement de pilotage et une carte ZYBO\cite{zyboweb}
+connecté à un serveur qui contient un outil de back-end Xilinx. L'environnement de pilotage permet d'envoyer les
+vecteurs d'entrées, de recevoir les sorties et de les comparer avec la référence.
+Les interfaces entrées-sorties personnalisées sont ajoutées dans l'architecture pour transférer des données entrées-sorties.
+Cette plateforme est assez puissante pour construire un architecture à partir d'un IP généré par AUGH
+avec les interfaces automatiquement.
+
+En adaptant d'idée de la validation automatique du projet 3i5 au stage, une plateforme pour valider et évaluer les performances du mécanisme
+de la commutation de contexte est proposée. La plateforme est composé d'une ZYBO connecté au réseau et d'un environnement de pilotage.
+Comme le mécanisme de la commutation de contexte est intégré dans l'IP généré par AUGH,
+le principe de génération d'architecture est similaire et les interfaces entrées-sorties peuvent être réutilisées avec quelques 
+modifications. L'environnement de pilotage permet de
+synthétiser les IP, de commander l'arrêt de l'exécution d'un IP, de récupérer du contexte, de transférer du contexte et
+de reprendre l'exécution.
+
+\section{Gestion de Stage}
+\label{sec:gestion}
+
+Afin d'augmenter l'efficacité du travail et d'atteindre le but de stage, un planning a été fait.
+Ce planning est constitué en plusieurs parties.
+
+La première partie est ....
+Le premier mois a été consacré afin d'effectuer .....
 
 La deuxième partie est 
+Cette partie a été réalisé pendant .....
 
 La troisième partie est
 
 La semaine restante étant prévu pour l'écriture du rapport
+
+Le déroulement du stage est présenté par la diagramme de gantt sur la Figure \ref{fig:ganttchart}.
+
+\begin{figure}[h]
+	\label{fig:ganttchart}
+	\centering
+	\includegraphics[width=1.7\textwidth,angle=90]{gantt}
+	\caption{La diagramme de gantt de déroulement du stage}
+	\vspace{-2mm}
+\end{figure}
+
+Les relations entre les tâches et les étapes sont montrés par la diagramme des tâches (Méthode PERT) sur la Figure \ref{fig:pert}.
+
+\begin{figure}[h]
+	\label{fig:pert}
+	\centering
+	\includegraphics[width=\textwidth, page=2]{stage}
+	\caption{La diagramme des tâches (méthode PERT) du stage}
+	\vspace{-2mm}
+\end{figure}
 

@@ -1,7 +1,23 @@
 \chapter{Les Principes de Base Technologiques}
+\label{chap:principe}
+\OnehalfSpacing
 \section{\emph{Field Programmable Gate Array (FPGA)}}
+\label{sec:fpga}
+ 
+Les FPGA ( Field Programmable Gate Arrays ou "réseaux logiques programmables" ) sont des composants VLSI 
+entièrement reconfigurables ce qui permet de les reprogrammer à volonté afin d'accélérer notablement certaines 
+phases de calculs\cite{fpgaweb}.
 
-\blindtext
+Les circuits FPGA sont constitués d'une matrice de blocs logiques programmables entourés de blocs d'entrée 
+sortie programmable. L'ensemble est relié par un réseau d'interconnexions programmable. 
+
+\begin{figure}[h]
+	\label{fig:layoutfpga}
+	\centering
+	\includegraphics[width=0.5\textwidth]{layoutfpga}
+	\caption{Diagramme d'un FPGA\cite{fpgaprototype}}
+	\vspace{-2mm}
+\end{figure}
 
 \begin{figure}[h]
 	\label{fig:fpgaflow}
@@ -11,13 +27,17 @@
 	\vspace{-2mm}
 \end{figure}
 
-\section{Outil de synthèse}
+\section{Outils de synthèse}
 
-\Blindtext
+La synthèse logique est une étape qui consiste à compiler la description fonctionnelle d'un circuit 
+à l'aide d'un outil de synthèse et d'une bibliothèque de cellules logiques. 
+Cette description peut être écrite en langage Verilog ou VHDL et ne doit pas comporter d'éléments 
+comportementaux non compréhensibles par l'outil de synthèse.
 
-\section{Changement de contexte matériel dans FPGA}
+\section{Commutation de contexte sur FPGA}
+\label{sec:contextswitch}
 
-\Blindtext
+\Blindtext[1]
 
 \begin{figure}[h]
 	\label{fig:switch}

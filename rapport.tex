@@ -14,7 +14,7 @@
 \usepackage{fancyhdr}
 \usepackage{enumitem}
 \usepackage{eurosym}
-\graphicspath{ {images/} }
+\graphicspath{ {images/}{gantt/} }
 
 \usepackage[english,francais]{babel}
 \usepackage[utf8]{inputenc}
@@ -34,7 +34,7 @@
 }
 
 \setsecnumdepth{section}
-\setcounter{tocdepth}{3}
+\setcounter{tocdepth}{1}
 \setcounter{maxsecnumdepth}{3}
 \renewcommand*{\cftappendixname}{Appendix\space}
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
@@ -68,13 +68,17 @@
 \include{conclusion}
 \backmatter
 \setlength{\parskip}{0pt}
+
+%reference that is not included in citation
+\nocite{ug585, ug980,ug835,zybomanual,zybotutorial}
+
+%reference style
 \bibliographystyle{acm}
 \bibliography{memoir}
 
-
 \addtocontents{toc}{\setlength\cftchapternumwidth{1em}}
 
-\includepdf[pages=-,addtotoc={1,chapter,1,Annexe 1 - Paper,annexe1}]{paper}
+\includepdf[pages=-,addtotoc={1,chapter,1,Annexe 1 - Paper FPS2015,annexe1}]{paper}
 
 \include{dos}
 

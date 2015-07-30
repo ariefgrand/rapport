@@ -1,21 +1,20 @@
 \chapter{Introduction}
+\label{chap:intro}
 \OnehalfSpacing
 \setlength{\parindent}{2em}
-Etant actuellement en dernière année d'un diplôme d'ingénieur Informatique Industrielle et Instrumentation (3I) au sein de Polytech'Grenoble, j'ai effectué un stage de 6 mois dans le laboratoire TIMA Grenoble. Le stage s'est déroulé sous la direction de Alban BOURGE (Doctorant), Frédéric ROUSSEAU et Olivier MULLER. Mon sujet de stage était: "Mise en œuvre d'un environnement de validation pour la migration de tâches sur FPGA".
+Etant actuellement en dernière année d'un diplôme d'ingénieur Informatique Industrielle et Instrumentation (3I) au sein de Polytech'Grenoble, 
+j'ai effectué un stage de 6 mois dans le laboratoire TIMA ( Techniques de l'Informatique et de la Microélectronique 
+pour l'Architecture des systèmes intégrés ) à Grenoble. 
+Le stage s'est déroulé sous la direction de Alban BOURGE (Doctorant), Frédéric ROUSSEAU et Olivier MULLER. 
+Mon sujet de stage était: "Mise en œuvre d'un environnement de validation pour la migration de tâches sur FPGA".
 
-Ce stage m'a permis de faire un travail d'ingénierie ainsi que de découvrir le monde de la recherche
-dans un laboratoire international. Je souhaitais faire ce stage au sein d'un laboratoire tel que TIMA dans l'équipe System Level Synthesis, pour obtenir une bonne compétence et expérience sur un développement d'un système microélectronique, notamment sur le développement d'architecture sur une plateforme reconfigurable comme FPGA\footnote{\emph{Field Programmable Gate Array}}. 
+Ce stage m'a permis d'effectuer un travail d'ingénierie ainsi que de découvrir le monde de la recherche
+dans un laboratoire international. Je souhaitais faire ce stage au sein d'un laboratoire tel que TIMA dans l'équipe System Level Synthesis, pour obtenir une bonne compétence et expérience sur le développement d'un système microélectronique, notamment sur le développement d'architecture sur une plateforme reconfigurable comme FPGA (cf. Section \ref{sec:fpga}). 
 
 L'objectif de ce stage étant de valider un mécanisme de sélection des points d'arrêts de l'exécution d'un traitement sur une plateforme reconfigurable ainsi que d'évaluer ses performances. 
-Ce mécanisme est envisagé dans le cadre de la thèse de mon maître de stage, M. Alban Bourge, qui va être expliqué dans le chapitre \ref{chap:sujet}. 
+Ce mécanisme est envisagé dans le cadre de la thèse de mon maître de stage, M. Alban Bourge, qui va être expliqué plus tard dans le chapitre \ref{chap:sujet}. 
 Le but de mon stage est de faire un démonstrateur qui nous permet de valider le mécanisme implémenté et d'évaluer ses performances sur un FPGA.
-L'idée sous-jacente est de pouvoir arrêter une tâche au certain point, de lancer une tâche différente et de continuer la suite de la première tâche toujours dans le même FPGA. 
-Le mécanisme mentionné a été simulé avec succès, il nous reste donc la validation dans un FPGA. 
-
-Dans le cadre de sa thèse, M. Alban Bourge a proposé une méthode qui permet de faire le changement de contexte depuis l'étape de synthèse d'un IP\footnote{\emph{Intelectual Property}}. 
-Afin de réaliser cette idée, la méthode est développée comme une extension d'un outil de synthèse haut niveau en raison de performance et d'efficacité. 
-L'outil de synthèse haut niveau AUGH\cite{Prost2014}, un logiciel utilisé dans la thèse de Alban Bourge, est développé par un chercheur postdoctoral comme un outil open-source qui peut générer des IP depuis un programme écrit en langage C. L'utilisation de l'extension sur AUGH nous permet de générer un IP qui supporte les récupération et restoration de contexte sur FPGA. 
-En exécutant cet IP sur FPGA, nous pourrions arrêter son traitement et continuer sur un autre FPGA. 
+Le mécanisme mentionné ci-dessus a été simulé avec succès, il nous reste donc la validation dans un FPGA. 
 
 Dans le cadre de ce stage, j'ai eu pour mission de configurer une plateforme sur un FPGA permettant les fonctions suivantes :
 \begin{itemize}

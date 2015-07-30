@@ -2,28 +2,171 @@
 
 \section{Implémentation Matérielle}
 
+L'architecture matérielle repose sur le Zynq qui est constitué d'un \emph{Processing System} (PS) 
+basé sur le processeur ARM Cortex-A9 double cœur et \emph{Programmable Logic} (PL) Xilinx dans
+un dispositif, avec une fréquence de 100 MHz. Ce dispositif intègre aussi une mémoire DDR3,
+un contrôleur Ethernet et d'autres dispositifs périphériques.
+
+Le diagramme de l'architecture matérielle de l'implémentation est présenté dans la Figure \ref{fig:hard}.
+La communication entre la partie PS et PL utilise le protocole AXI4 au travers d'un port générique
+de 32-bits avec PS comme le maître et tous les IP dans PL comme les esclaves.
+L'interface AXI4-Lite qui est un sous-ensemble de protocole AXI4 est utilisé pour une communication
+plus simple et un contrôle de registre plus petit dans le composant. Cette interface est utilisée
+avant la future optimisation de la vitesse de communication.
+
+\begin{figure}[h]
+	\label{fig:hard}
+	\centering
+	\includegraphics[width=0.75\textwidth]{hardware}
+	\caption{La diagramme de l'architecture matérielle}
+	\vspace{-2mm}
+\end{figure}
+
+L'IP généré par AUGH (marqué avec un nom DUT dans la Figure \ref{fig:hard} pour \emph{Design Under Test}) est lié avec les interfaces personnalisées,
+\emph{Input AXI} et \emph{Output AXI} au travers des FIFOs. Les FIFOs sont ajoutées avant la génération du bitstream
+afin de s'adapter aux différences de protocole et de largeur des ports entre le bus AXI et le DUT.
+
+Le DUT utilise le protocole de poignée de main sur ses E/S alors que AXI4-Lite met en œuvre le protocole AXI4.
+Ce sont deux protocoles différents, il devrait y avoir besoin de conversion eux. Les \emph{Input AXI} et \emph{Output AXI}
+facilitent la conversion de protocole qui permettent la partie PS et DUT se communiquent. 
+
+En plus de protocole, la largeur de données entre le bus AXI et le DUT peuvent être différentes.
+La largeur de données du bus AXI est 32-bits et celle du DUT est variable et elle dépend d'application
+exécuté, montré par N et M dans la Figure \ref{fig:hard}. Une modification des interfaces est nécessaire afin
+de surmonter ce problème. Chaque fois un IP est généré par AUGH, les paramètres de l'IP sont
+lus et les interfaces sont ajustées avant la synthèse dans Vivado. 
+
+Afin de transférer des données du bus AXI au DUT, un buffer représenté par une tableau de deux dimensions est utilisé dans
+\emph{Input AXI} et \emph{Output AXI}. La taille de buffer dépend de la largeur des ports du DUT. 
+Les données du bus AXI sont bufferisées et divisées en plusieurs sorties vers le DUT dans \emph{Input AXI}.
+Alors que les sorties du DUT sont bufferisées et sont réunies en une sortie vers le bus AXI dans \emph{Output AXI}.
+Par exemple, si le DUT a une entrée de 8-bits, chaque mot de 32-bit du bus AXI est converti à 4 mot de 8-bits par 
+\emph{Input AXI}. Cette conversion va changer le nombre de colonne du buffer, les données donc sont multipliées
+selon la largeur des ports.
+
+Ces interfaces personnalisées sont conçues pour envoyer des sorties consécutives chaque coup d'horloge
+afin d'éviter de goulot d'étranglement même si les largeurs de données E/S sont différentes.
+
+Le \emph{Controller} dans la figure est conçu pour recevoir les commandes du PS, les interpréter et les passer au DUT.
+Comme la différence de protocole est toujours là, un algorithme qui traduit les commandes est embarqué dedans.
+Le \emph{Timer} est conçu pour calculer le nombre de cycle besoin pour exécuter une application testée,
+arriver à un point de contrôle et extraire le contexte de DUT.
+
+Dans le stage, Vivado est utilisé pour générer une interface AXI4 pré-construite avant l'ajout de buffer et de l'algorithme
+de conversion du protocole.
+L'utilisation de Vivado permet la conception de l'architecture matérielle en mode \emph{batch}, c'est-à-dire sans l'interface
+graphique. Ce mode consomme moins de ressource et il est accessible depuis la ligne de commande, qui 
+support l'automatisme. Dans le Vivado, le DUT et les autres IP sont intégrés et procédés afin de générer un bitstream
+depuis les étapes de synthèse et placement-et-routage.
+
+
 \section{Implémentation Logicielle}
 
-\section{Mesures}
+Comme une plateforme basée sur SoC programmable, Zynq est capable de lancer une application \emph{standalone}
+ou une application embarqué dans un système d'exploitation (Linux Embarqué). Dans cette implémentation,
+Petalinux, une distribution de Linux Embarqué, est installé afin de lancer l'environnement de pilotage.
+Cette approche donne des avantages lorsque la reconfiguration FPGA ainsi que la communication via
+AXI4 car tous les drivers sont déjà prêts dans le Linux Embarqué.
 
-\begin{figure}[h]
-	\label{fig:system}
-	\centering
-	\includegraphics[width=\textwidth]{schemasystem}
-	\caption{Schéma du Système Global \cite{Brisebard2015}}
-	\vspace{-2mm}
-\end{figure}
+Parallèlement avec la génération de Linux, les drivers additionnels sont développés et ajoutés en complément
+avec les drivers natives de Petalinux. Ces drivers gèrent les tâches d'écriture et de lecture des IP dans la partie PL mené
+par la partie PS. L'utilisateur peut appeler ces drivers sur la ligne de commande ainsi que les utiliser dans la script
+de bash. Ces drivers sont génériques et utilisables pour n'importe quel DUT.
 
-\begin{figure}[h]
-	\label{fig:hardware}
-	\centering
-	\includegraphics[width=\textwidth]{hardware}
-	\caption{La diagramme de la partie hardware}
-	\vspace{-2mm}
-\end{figure}
 
-\section{Résultat}
+\subsection{Système d'Exploitation Petalinux}
+
+Dans le stage, Petalinux 2014.4 est utilisé comme le système d'exploitation principal puisqu'il fournit une référence
+intégrale de distribution de linux intégré et dédié aux dispositifs Xilinx.
+
+Dans le stage, la génération/compilation du Petalinux est effectué une fois dans le PC serveur tout début avant le flot d'exécution est commencé.
+Même que la génération du Petalinux peut se lancer chaque fois, j'ai décidé de ne pas intégrer ce processus dans le flot
+car il n'y a pas de modification lié au système d'exploitation ou aux drivers.
+Après la compilation, les fichiers \textbf{BOOT.BIN} et \textbf{image.ub} sont mis dans la carte SD. La carte démarrera
+en cherchant ces deux fichiers.
+
+\subsection{Les Drivers de Communication Générique}
+\label{subsec:embedded}
+
+Cette partie décrit les drivers de communication générique écrit en langage C. Ces fonctions
+sont compilées et intégrées dans le Petalinux.
+
+\begin{itemize}
+	\item\ com\_axi:
+	Cette fonction est une version modifiée d'une fonction prête à l'utiliser de tutorial ZYBO pour écrire et lire un nombre entier
+	de linux aux interfaces AXI4-Lite. Il envoi des valeurs de 32-bits au \emph{Controller} ou il lit le nombre de cycles du \emph{Timer}.
+
+	\item\ read\_axi:
+	Cette fonction lit des données de l'interface \emph{Output AXI}, écrit les données lues dans un fichier et sauvegarde le fichier au stockage en réseau.
+	
+	\item\ write\_axi:
+	Cette fonction cherche le fichier des vecteurs de test au stockage en réseau, lit les données du fichier et écrit à l'interface \emph{Input AXI}.
+
+	\item\ compare\_axi:
+	Cette fonction compare les sorties reçues après l'exécution de l'application avec la référence.
+	L'avantage de cette fonction par rapport à la fonction de comparison \emph{diff} en Linux est 
+	elle peut montrer le résultat et énumérer les sorties qui sont différents.
+
+	\item\ read\_cp:
+	Cette fonction lit de contexte récupérer du DUT dans le \emph{Controller}, écrit le contexte dans un fichier
+	et sauvegarde le fichier du contexte au stockage en réseau.
+	
+	\item\ write\_cp:
+	Cette fonction cherche le fichier de contexte, lit les données du fichier et écrit au buffer dans le \emph{Controller}.
+	Le contexte va être restauré au DUT par le \emph{Controller} pour continuer la suite de l'exécution.
+	
+	\item\ save\_time:
+	Cette fonction lit le nombre de cycles passé pendant l'exécution, le nombre de cycles d'attente à
+	l'extraction du contexte et le nombre de cycles d'extraction du \emph{Timer}, écrit les cycles dans un fichier
+	et sauvegarde le fichier au stockage en réseau.
+	
+	\item\ load\_time:
+	Cette fonction cherche le fichier des cycles au stockage en réseau, lit les nombres des cycles
+	et les écrit au \emph{Timer} afin que le compteur ne recommencer depuis 0 quand une application
+	est arrêtée et reprise.
+
+\end{itemize}
+
+\subsection{Script de Bash}
+Dans cette partie, on parle de script écrit pour lancer le flot de validation automatiquement 
+en appelant les drivers expliqués dans la Section \ref{subsec:embedded}.
+La partie script est constitué en deux qui vont être exécutées sur le serveur et 
+sur la plateforme Zybo. Ces exécutions sont indépendantes et peuvent être
+lancées parallèlement. Lorsque le \emph{script\_server} est appelé, il prend
+l'IP généré par AUGH et il exécute le processus sur le serveur. Le \emph{script\_zybo}
+lance l'exécution dans la plateforme.
+
+\begin{itemize}
+	\item\ script\_server:
+	Après la génération de l'IP par l'outil de synthèse AUGH, la suite est exécutée avec ce script. Le \emph{script\_server}
+	cherche les paramètres nécessaires afin de modifier les interfaces personnalisées et de lancer Vivado pour génération
+	de l'architecture matérielle en mode de \emph{batch}. Le script exécute la synthèse, le placement et routage de circuit et 
+	la génération de bitstream dans Vivado, ensuite il sauvegarde le bitstream dans le stockage en réseau.
+	Il met aussi les vecteurs de test, la référence et le fichier de configuration avec un nom défini.
+
+	\item\ script\_zybo:
+	Le \emph{script\_zybo} cherche le bitstream dans le stockage en réseau. Il exécute la reconfiguration de FPGA et démarre
+	l'application sur FPGA. Comme le Petalinux intègre le driver de reconfiguration \emph{devcfg}, la reconfiguration peut
+	être faite par une commande \emph{xdevcfg}. L'environnement de test est lancé avec les vecteurs de test et les sorties
+	sont comparées avec la référence. Ce processus est exécuté dans un ordre séquentiel et il est répétable pour des
+	bitstreams et des vecteurs de test différents.
+	
+\end{itemize}
+
+\subsection{\emph{Network File System}}
+Performing automatic validation of IP by any user connected in the network is one of the primary goal in our implementation.
+A protocol on the network is needed to facilitate file transfers between users, PC for bitstream generation and ZYBO platform.
+After considering the complexity level and performance, we decided to use \emph{Network File System (NFS)} in our work.
+
+The implementation of NFS requires two packages: \emph{nfs-kernel-server} package in server side and \emph{nfs-common} in client side.
+Meanwhile in Petalinux, external package for NFS client is not necessary since it has been integrated in its kernel. Enabling \emph{portmap} in the configuration will allow NFS disk mounting in zynq.
+After these packages have been installed, configuration of the NFS disk can be done in \emph{/etc/exports} file.
+
+\section{Mesures et Résultat}
+
 
 \blindtext
 
 \section{Analyse et Discussion}
+
+\blindtext
