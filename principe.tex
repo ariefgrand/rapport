@@ -3,29 +3,89 @@
 \OnehalfSpacing
 \section{\emph{Field Programmable Gate Array (FPGA)}}
 \label{sec:fpga}
- 
-Les FPGA ( Field Programmable Gate Arrays ou "réseaux logiques programmables" ) sont des composants VLSI 
-entièrement reconfigurables ce qui permet de les reprogrammer à volonté afin d'accélérer notablement certaines 
-phases de calculs\cite{fpgaweb}.
+\justify
+Les FPGA ( Field Programmable Gate Arrays) se traduit en français par circuits prédiffusés 
+programmables\cite{hubinweb},
+sont des composants VLSI  entièrement reconfigurables ce qui permet 
+de les reprogrammer à volonté afin d'accélérer notablement certaines 
+phases de calculs\cite{fpgaweb}. Contrairement aux circuits prédiffusés conventionnels, les circuits
+prédiffusés programmables ne demandent pas de fabrication spéciale en usine, ni de systèmes de 
+développement coûteux. Inventés par Ross Freeman, le co-fondateur de la société Xilinx en 1985, les FPGA, dans la famille
+des ASICs, se situent entre les réseaux logiques programmables et les prédiffusés. 
 
-Les circuits FPGA sont constitués d'une matrice de blocs logiques programmables entourés de blocs d'entrée 
-sortie programmable. L'ensemble est relié par un réseau d'interconnexions programmable. 
+Les circuits FPGA sont constitués d'une matrice de blocs logiques configurables permettant de réaliser des fonctions
+combinatoires et des fonctions séquentielles. Tout autour de ces blocs logiques, on trouve des blocs entrées/sorties
+dont le rôle est de gérer les entrées-sorties réalisant l'interface avec les modules extérieurs.
+L'ensemble est relié par un réseau d'interconnexions programmable, présenté dans la Figure \ref{fig:layoutfpga}. 
+
+Un bloc logique est de manière générale constitué d'une table de coresspondance
+(LUT ou \emph{Look-Up-Table} et d'une bascule (\emph{Flip-Flop} en anglais). 
+La LUT sert à implémenter
+des équations logiques ayant généralement 4 à 6 entrées et une sortie. 
+Elle peut toutefois être considérée comme une petite
+mémoire, un multiplexeur ou un registre à décalage. 
+Le registre permet de mémoriser un état (machine séquentielle) ou
+de synchroniser un signal (pipeline).
+La configuration du circuit est mémorisée sur la couche réseau SRAM et stockée dans une ROM externe. 
+Un dispositif interne permet à chaque mise sous tension de charger la SRAM interne à partir de la ROM. 
+Ainsi on conçoit aisément qu'un même circuit puisse être exploité successivement avec des ROM 
+différentes puisque sa programmation interne n'est jamais définitive.
 
 \begin{figure}[h]
-	\label{fig:layoutfpga}
 	\centering
-	\includegraphics[width=0.5\textwidth]{layoutfpga}
+	\includegraphics[width=0.4\textwidth]{layoutfpga}
 	\caption{Diagramme d'un FPGA\cite{fpgaprototype}}
+	\label{fig:layoutfpga}
 	\vspace{-2mm}
 \end{figure}
 
+Le flot de programmation des FPGA est présenté dans la Figure \ref{fig:fpgaflow}. Il est décomposé
+en plusieurs étapes:
+\begin{itemize}
+	\item\ la synthèse logique,
+	\item\ la projection,
+	\item\ le placement / routage
+	\item\ la génération de fichier de configuration (bitstream).
+\end{itemize}
+
 \begin{figure}[h]
-	\label{fig:fpgaflow}
 	\centering
-	\includegraphics[width=0.5\textwidth]{fpgaflow_hauck}
-	\caption{Le flux de dessin sur FPGA}
+	\includegraphics[width=0.4\textwidth]{fpgaflow_hauck}
+	\caption{Le flot de programmation typique des FPGA}
+	\label{fig:fpgaflow}
 	\vspace{-2mm}
 \end{figure}
+
+\justify
+Les FPGA sont utilisés dans diverses applications nécessitant de l'électronique numérique (télécommunications, aéronautique, transports...).
+Ils sont également utilisés pour le prototypage d'ASIC.
+
+Les FPGA sont généralement plus lents, plus chers à l'unité et consomment davantage d'énergie 
+que leur équivalent en ASIC (Application Specific Integrated Circuit). Cependant, ils ont plusieurs avantages :
+\begin{itemize}
+    \item\ délai de mise sur le marché plus court, car ce sont des composants standards,
+    \item\ temps de développement plus court, car on réutilise des fonctions de base et 
+	    la reconfigurabilité autorise une validation préalable moins stricte,
+    \item\ coût inférieur pour de petites séries (moins de 10 000 unités). 
+	Avec l'évolution technologique, cette quantité tend à augmenter : en effet, le prix d'une puce est 
+	proportionnel à sa surface, qui diminue avec la finesse de gravure, tandis que les coûts initiaux 
+	pour fabriquer un ASIC (conception, tests, masques de gravure) sont en forte augmentation.
+\end{itemize}
+
+Plusieurs FPGA modernes possèdent la possibilité d'être reconfigurés 
+(on parle de configuration lorsqu'il s'agit de programmation du matériel) partiellement à la volée. 
+Ceci permet d'obtenir des systèmes reconfigurables - par exemple une unité centrale dont 
+les instructions changent dynamiquement en fonction des besoins.
+
+Les FPGA modernes sont assez vastes et contiennent suffisamment de mémoire pour être configurés 
+pour héberger un cœur de processeur ou un DSP, afin d'exécuter un logiciel. 
+On parle dans ce cas de processeur softcore, par opposition aux microprocesseurs hard-core enfouis dans le silicium. 
+Aujourd'hui, les fabricants de FPGA intègrent même un ou plusieurs cœurs de processeur « hard-core » 
+sur un même composant afin de conserver les ressources logiques configurables du composant. 
+Ceci n'exclut pas l'utilisation de processeur softcore possédant de nombreux avantages. 
+On tend donc vers des « Systems On Chip », comme pour le microcontrôleur il y a quelques décennies, 
+avec en plus de la logique configurable selon l'utilisateur. Une des familles FPGAs « Systems On Chip »
+qui intègrent le processeur « hard-core » et softcore dans le même puce est Zynq-7000\cite{ug585} conçu par Xilinx.
 
 \section{Outils de synthèse}
 
@@ -34,15 +94,62 @@ La synthèse logique est une étape qui consiste à compiler la description fonc
 Cette description peut être écrite en langage Verilog ou VHDL et ne doit pas comporter d'éléments 
 comportementaux non compréhensibles par l'outil de synthèse.
 
+Le but de la synthèse logique est l'amélioration de la productivité de la conception d'IP dont l'évolution ne suit pas la capacité d'intégration\cite{mullercours}.
+La synthèse logique a plusieurs avantages :
+\begin{itemize}
+	\item\ réduction du temps de conception,
+	\item\ meilleure exploration architecturale,
+	\item\ élévation du niveau d'abstraction: code plus portable, spécification de taille réduite (moins d'erreurs) et simulation plus rapide.
+\end{itemize}
+
+Dans la synthèse d'architecture logique, il y a plusieurs étapes qui doivent être réalisés afin de générer 
+une architecture RTL à partir de la spécification:
+\begin{enumerate}
+	\item\ Compilation : Génération de la représentation interne à partir de la spécification
+	\item\ Transformations : étapes de simplifications du modèle interne
+	\item\ Sélection : choisir dans une bibliothèque les opérateurs pouvant effectués les opérations de la spécification
+	\item\ Allocation : définir le nombre exact de chaque ressource (opérateur/registre)
+	\item\ Ordonnancement : affecter chaque opération à un pas de contrôle
+	\item\ Assignation : affecter chaque opération sur les ressource allouées
+\end{enumerate}
+Ces étapes d'un outil de synthèse logique sont présentés dans la Figure \ref{fig:synthese}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{synthese}
+	\caption{Les étapes d'un outil de synthèse d'architecture}
+	\label{fig:synthese}
+	\vspace{-2mm}
+\end{figure}
+
 \section{Commutation de contexte sur FPGA}
 \label{sec:contextswitch}
 
-\Blindtext[1]
+En informatique, la commutation de contexte est un mécanisme qui permet au système d'exploitation 
+de remplacer le processus élu par un autre processus éligible. Elle consiste à sauvegarder l'état d'un processus
+ou d'un processus léger et à restaurer l'état d'un autre processus (léger) de façon à ce que des processus
+multiples puissent partager les ressources d'un seul processeur dans le cadre d'un système d'exploitation
+multitâche\cite{technonet}. 
+Un comportement similaire est implémenté dans la commutation de contexte sur FPGA, sauf le transfert
+est effectué dans FPGAs.
+
+Un \emph{checkpoint} (ou point de contrôle en français) est défini comme un état d'une tâche où la commutation de contexte est 
+autorisé\cite{Bourge2015}. Le concept de \emph{checkpoint} est utilisé initialement dans les applications tolérantes aux erreurs. Le contexte
+d'application est sauvegardé chaque fois un \emph{checkpoint} de matériel est atteint. Lorsqu'il y a d'erreur, le protocole est capable de restaurer
+l'état du système au \emph{checkpoint} sauvegardé.
+
+Dans le cadre de sa thèse, M. Alban Bourge a profité de l'utilisation des \emph{checkpoints} pour rendre possible
+la commutation de contexte sur FPGA. Un sauvegarde de contexte peut être effectué lorsque un prochain \emph{checkpoint}
+de l'application est atteint. La restauration de contexte recommence la tâche au point d'arrêt en utilisant
+le \emph{checkpoint} hardware sauvegardé précédemment. Une illustration d'une commutation de contexte est présentée
+dans la Figure \ref{fig:switch}. Le temps d'attente pour arriver à un \emph{checkpoint} est montré par $t_c$ et le temps
+de sauvegarde d'un contexte est montré par $t_s$ dans la figure.
 
 \begin{figure}[h]
-	\label{fig:switch}
 	\centering
-	\includegraphics[width=\textwidth]{switch}
-	\caption{Exemple de changement de contexte matériel sur deux FPGA}
+	\includegraphics[width=\textwidth]{context}
+	\caption{Exemple de commutation de contexte matériel entre deux applications\cite{Bourge2015}}
+	\label{fig:switch}
 	\vspace{-2mm}
 \end{figure}
+

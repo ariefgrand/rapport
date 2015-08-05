@@ -2,26 +2,33 @@
 \label{chap:concep}
 \OnehalfSpacing
 
-This section describes the architecture of the system we built using FPGA in order to validate the behaviour of the circuit
-obtained from the HLS tool AUGH.
-As explained in the previous section, directly programming a circuit in the FPGA will be relatively less time-consuming than
-launching a simulation with post-routing timing annotations. It will run with the same frequency of FPGA and thus will show
-the real performance of the circuit.
+Ce chapitre parle des idées principales du système de la validation de commutation de contexte sur FPGA.
+Comme expliqué dans la partie Introduction (cf. Chapitre \ref{chap:intro}) et la description du sujet de stage 
+(cf. Section \ref{sec:sujet}), le mécanisme de la commutation de contexte développé par mon maître de stage
+est intégré dans le logiciel de synthèse de haut niveau (synthèse logique).
+ 
 
 \section{Architecture Matérielle}
+\label{sec:concephard}
+
+La conception de l'architecture matérielle repose sur le problème de connexion entre chaque plateforme
+utilisée afin de construire un démonstrateur qui pourrait valider la commutation de contexte.
+Dans le projet 3i5, 
+
+L'architecture du système prévu est présente dans la Figure \ref{fig:system}
 
 \begin{figure}[h]
 	\label{fig:system}
 	\centering
-	\includegraphics[width=\textwidth]{schemasystem}
-	\caption{Schéma du Système Global \cite{Brisebard2015}}
+	\includegraphics[width=0.75\textwidth]{system}
+	\caption{Schéma de l'architecture du système}
+	\label{fig:system}
 	\vspace{-2mm}
 \end{figure}
 
-
-
 \section{Architecture Logicielle}
+\label{sec:concepsoft}
 
-
+La conception de l'architecture logicielle est liée avec 
 
 \section[Intéraction entre Les Deux]{Intéraction entre Les Architectures Matérielles et Logicielles}

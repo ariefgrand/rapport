@@ -41,7 +41,7 @@ Les interfaces entrées-sorties personnalisées sont ajoutées dans l'architectu
 Cette plateforme est assez puissante pour construire un architecture à partir d'un IP généré par AUGH
 avec les interfaces automatiquement.
 
-En adaptant d'idée de la validation automatique du projet 3i5 au stage, une plateforme pour valider et évaluer les performances du mécanisme
+En adaptant de l'idée de la validation automatique du projet 3i5 au stage, une plateforme pour valider et évaluer les performances du mécanisme
 de la commutation de contexte est proposée. La plateforme est composé d'une ZYBO connecté au réseau et d'un environnement de pilotage.
 Comme le mécanisme de la commutation de contexte est intégré dans l'IP généré par AUGH,
 le principe de génération d'architecture est similaire et les interfaces entrées-sorties peuvent être réutilisées avec quelques 
@@ -51,37 +51,59 @@ de reprendre l'exécution.
 
 \section{Gestion de Stage}
 \label{sec:gestion}
-
+\justify
 Afin d'augmenter l'efficacité du travail et d'atteindre le but de stage, un planning a été fait.
-Ce planning est constitué en plusieurs parties.
+Ce planning est présenté en diagramme de gantt dans la Figure \ref{fig:gantt} et en diagramme de PERT
+dans la Figure \ref{fig:pert}.
 
-La première partie est ....
-Le premier mois a été consacré afin d'effectuer .....
+Dans la Figure \ref{fig:gantt}, le stage est divisée en quatre grandes parties. La première partie est le développement matériel. Cette partie concerne
+de l'intégration de l'IP et ses interfaces. La deuxième partie est le développement de logiciel. Ce développement
+concerne le système d'exploitation, les logiciels qui seront embarqué et les scripts pour lancer le flot d'exécution.
+La troisième partie de stage est le test. Dans tous les développements de système, les tests sont nécessaires
+pour valider les composants (test unitaire) et l'intégration de tous les composants (test d'intégration). La dernière partie
+est la documentation de stage. Cette documentation inclut la rédaction du rapport et la préparation de soutenance.
 
-La deuxième partie est 
-Cette partie a été réalisé pendant .....
+Les premières deux semaines ont été consacrées pour modifier les interfaces E/S personnalisées. Ces interfaces
+gèrent les entrées et les sorties de l'IP généré par AUGH. Pour valider la commutation de contexte,
+il faudrait s'assurer que l'application fonctionne correctement incluant les communications d'entrées-sorties.
+Dans le projet 3i5, les interfaces similaires sont utilisées, il suffit de faire une petite amélioration sur le mécanisme de protocole
+\emph{handshake} qui sera expliquée dans la Section \ref{sec:concephard}.
 
-La troisième partie est
+Après les interfaces E/S sont finies et testées, le stage s'avance au développement de l'interface de la commutation
+de contexte pendant environ un mois. Afin d'évaluer les performances de système, l'utilisateur doit avoir un accès au
+nombre des cycles passés pendant l'exécution, un timer est donc développé pendant deux semaines pour enregistrer
+le nombre des cycles de l'exécution et de la commutation de contexte.
 
-La semaine restante étant prévu pour l'écriture du rapport
+La partie logicielle est développée pendant 6 semaines, incluant les programmes pour l'envoi de l'E/S, la commutation
+de contexte et enregistrement/chargement de cycles. 
 
-Le déroulement du stage est présenté par la diagramme de gantt sur la Figure \ref{fig:ganttchart}.
+Dans le stage, les tests sont effectués pour chaque composant et programme construisent ainsi que ses intégrations. 
+Le test unitaire est réalisé en faisant les simulations fonctionnelles pour la partie matérielle et les compilations en GCC
+pour les programmes qui seront embarqués au système d'exploitation. Après tous les composants sont intégrés,
+le test global/intégration est effectué en même temps que le développement de script de l'exécution au serveur
+et à la plateforme. 
+
+Un mois et demi restant étant prévu pour le rédaction du rapport qui superpose le test d'intégration et la préparation
+de soutenance.
 
 \begin{figure}[h]
-	\label{fig:ganttchart}
 	\centering
-	\includegraphics[width=1.7\textwidth,angle=90]{gantt}
+	\includegraphics[width=0.9\textheight,angle=90]{stage2}
 	\caption{La diagramme de gantt de déroulement du stage}
+	\label{fig:gantt}
 	\vspace{-2mm}
 \end{figure}
 
-Les relations entre les tâches et les étapes sont montrés par la diagramme des tâches (Méthode PERT) sur la Figure \ref{fig:pert}.
+Les dépendances entre les tâches sont présentées dans la Figure \ref{fig:pert}. Le chemin critique est montré par le noyau
+de test unitaire et le noyau de test global. Ce sont des tâches qui sont les plus importantes et qui durent les plus longues car
+elles valident les travails effectués dans le stage. La durée de test unitaire est prévu comme la durée de développement
+matériel additionné par la durée de développement logiciel s'ils sont fait en séquence.
 
 \begin{figure}[h]
-	\label{fig:pert}
 	\centering
-	\includegraphics[width=\textwidth, page=2]{stage}
+	\includegraphics[width=0.9\textheight, angle=90]{pert}
 	\caption{La diagramme des tâches (méthode PERT) du stage}
+	\label{fig:pert}
 	\vspace{-2mm}
 \end{figure}
 
