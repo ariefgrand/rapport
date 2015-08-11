@@ -33,7 +33,7 @@ différentes puisque sa programmation interne n'est jamais définitive.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.4\textwidth]{layoutfpga}
+	\includegraphics[width=0.3\textwidth]{layoutfpga}
 	\caption{Diagramme d'un FPGA\cite{fpgaprototype}}
 	\label{fig:layoutfpga}
 	\vspace{-2mm}
@@ -116,7 +116,7 @@ Ces étapes d'un outil de synthèse logique sont présentés dans la Figure \ref
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{synthese}
+	\includegraphics[width=0.8\textwidth]{synthese}
 	\caption{Les étapes d'un outil de synthèse d'architecture}
 	\label{fig:synthese}
 	\vspace{-2mm}
@@ -135,21 +135,41 @@ est effectué dans FPGAs.
 
 Un \emph{checkpoint} (ou point de contrôle en français) est défini comme un état d'une tâche où la commutation de contexte est 
 autorisé\cite{Bourge2015}. Le concept de \emph{checkpoint} est utilisé initialement dans les applications tolérantes aux erreurs. Le contexte
-d'application est sauvegardé chaque fois un \emph{checkpoint} de matériel est atteint. Lorsqu'il y a d'erreur, le protocole est capable de restaurer
+d'application est sauvegardé chaque fois un \emph{checkpoint} de matériel est atteint. Lorsqu'il y a une erreur, le protocole est capable de restaurer
 l'état du système au \emph{checkpoint} sauvegardé.
 
-Dans le cadre de sa thèse, M. Alban Bourge a profité de l'utilisation des \emph{checkpoints} pour rendre possible
-la commutation de contexte sur FPGA. Un sauvegarde de contexte peut être effectué lorsque un prochain \emph{checkpoint}
+Dans le cadre de sa thèse, M. Alban Bourge a développé un système de \emph{checkpoints} pour rendre possible
+la commutation de contexte sur FPGA. La sauvegarde de contexte sera effectué lorsqu'un prochain \emph{checkpoint}
 de l'application est atteint. La restauration de contexte recommence la tâche au point d'arrêt en utilisant
-le \emph{checkpoint} hardware sauvegardé précédemment. Une illustration d'une commutation de contexte est présentée
-dans la Figure \ref{fig:switch}. Le temps d'attente pour arriver à un \emph{checkpoint} est montré par $t_c$ et le temps
-de sauvegarde d'un contexte est montré par $t_s$ dans la figure.
+le \emph{checkpoint} hardware sauvegardé précédemment. 
+
+Une illustration d'une commutation de contexte entre deux tâches est présentée
+dans la Figure \ref{fig:switch}. Avant la tâche 1 se termine, il est arrêté par la demande de préemption.
+Après la demande de préemption est faite, le circuit cherche le prochain \emph{checkpoint}
+disponible dans le flot d'exécution, montré par \emph{CP} dans la figure. Lorsqu'un \emph{checkpoint}
+est trouvé, l'état de circuit sera sauvegardé en lisant les registres et mémoires associés.
+Le temps d'attente pour arriver à un \emph{checkpoint} est montré par $t_c$ et le temps
+de sauvegarde d'un contexte est montré par $t_s$ dans la figure. Pour continuer à la suite de l'exécution,
+l'état sauvegardé sera restauré au FPGA.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=\textwidth]{context}
+	\includegraphics[width=0.9\textwidth]{context}
 	\caption{Exemple de commutation de contexte matériel entre deux applications\cite{Bourge2015}}
 	\label{fig:switch}
 	\vspace{-2mm}
 \end{figure}
 
+Implémentation réalisée par M. Alban Bourge a été faite dans le logiciel de synthèse logique AUGH.
+Un algorithme est ajouté lors de la synthèse qui permet d'arrêter une tâche sur FPGA à un \emph{checkpoint}.
+Le contenu des registres et des mémoires lié au \emph{checkpoint} sera sauvegardé à quelque part
+afin de les restaurer lorsque la tâche est continuée. En effet, les ports de \emph{Context Switch} pour les
+commandes et les données de la commutation de contexte sont ajoutés, qui est illustré dans la Figure \ref{fig:cp3}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\textwidth]{cp3}
+	\caption{Le diagramme de l'IP généré par AUGH avec les ports de \emph{Context Switch}}
+	\label{fig:cp3}
+	\vspace{-2mm}
+\end{figure}

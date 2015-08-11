@@ -1,31 +1,36 @@
 \chapter{Implémentation et Résultat}
-
+\label{chap:implementation}
 L'implémentation du démonstrateur dans le stage utilise une carte électronique ZYBO\cite{zyboweb}
-comme la plateforme principale.
+comme la plateforme principale. Cette plateforme nous permet d'implémenter des matériels
+dans le FPGA et des logiciels dans le processeur ARM. 
 
 \section{Implémentation Matérielle}
 
-L'architecture matérielle repose sur le Zynq qui est constitué d'un \emph{Processing System} (PS) 
-basé sur le processeur ARM Cortex-A9 double cœur et \emph{Programmable Logic} (PL) Xilinx dans
+L'architecture matérielle repose sur la plateforme Zynq qui est constitué d'un \emph{Processing System} (PS) 
+basé sur le processeur ARM Cortex-A9 double cœur et un \emph{Programmable Logic} (PL) Xilinx dans
 un dispositif, avec une fréquence de 100 MHz. Ce dispositif intègre aussi une mémoire DDR3,
 un contrôleur Ethernet et d'autres dispositifs périphériques.
 
-Le diagramme de l'architecture matérielle de l'implémentation est présenté sur la Figure \ref{fig:hard}.
-La communication entre la partie PS et PL utilise le protocole AXI4 à travers un port générique
-de 32-bits avec PS comme Maître et tous les IP dans PL comme Esclaves.
+Le diagramme de l'architecture matérielle implémentée dans notre système est présenté sur la Figure \ref{fig:hard}.
+La communication entre la partie PS et PL utilise le protocole AXI4 à travers d'un port AXI générique
+de 32-bits. 
+Le processeur devient le Maître du système et l'IP testé (marqué par DUT\footnote{\emph{Device Under Test}} dans la figure)
+avec les interfaces comme les Esclaves.
+
+Pour le démonstrateur construit dans le stage, l'interface AXI4-Lite est utilisée.
 L'interface AXI4-Lite est un sous-ensemble de protocole AXI4 utilisé pour une communication
-plus simple et un contrôle de registre plus petit dans le composant. Cette interface est utilisée
-avant la future optimisation de la vitesse de communication.
+plus simple et un contrôle de registre plus petit dans le composant.
+Pour la future implémentation plus rapide, l'autre interfaces AXI4 peut être utilisée. 
 
 \begin{figure}[h]
-	\label{fig:hard}
 	\centering
 	\includegraphics[width=0.75\textwidth]{hardware}
 	\caption{La diagramme de l'architecture matérielle}
+	\label{fig:hard}
 	\vspace{-2mm}
 \end{figure}
 
-L'IP généré par AUGH (marqué avec un nom DUT sur la Figure \ref{fig:hard} pour \emph{Design Under Test}) est lié avec les interfaces personnalisées,
+L'IP généré par AUGH est lié avec les interfaces d'entrées-sorties personnalisées,
 \emph{Input AXI} et \emph{Output AXI} à travers des FIFOs. Les FIFOs sont ajoutées avant la génération du bitstream
 afin de s'adapter aux différences de protocole et de la largeur des ports entre le bus AXI et le DUT.
 
@@ -88,11 +93,11 @@ car il n'y a pas de modifications lié au système d'exploitation ou aux drivers
 Après la compilation, les fichiers \textbf{BOOT.BIN} et \textbf{image.ub} sont mis dans la carte SD. La carte démarrera
 en cherchant ces deux fichiers.
 
-\subsection{Les Drivers de Communication Générique}
+\subsection{Bibliothèques de logiciels}
 \label{subsec:embedded}
 
-Cette partie décrit les drivers de communication générique écrit en langage C. Ces fonctions
-sont compilées et intégrées dans le Petalinux.
+Cette partie décrit les bibliothèques de logiciels écrit en langage C. Ces bibliothèques sont ajoutées  
+pendant la génération du Petalinux en complément à tous les drivers définis dans sa distribution.
 
 \begin{itemize}
 	\item\ com\_axi:
@@ -166,11 +171,25 @@ Ce paquetage n'est pas nécéssaire pour la plateforme ZYBO car le Petalinux int
 En autorisant \emph{portmap} dans la configuration permet le montage de disque NFS au Zynq. Après les paquetages sont installés,
 la configuration de disque NFS peut se faire dans le fichier \emph{/etc/exports}.
 
+Le NFS comme le stockage de réseau du système conserve les fichiers suivants :
+\begin{itemize}
+	\item\ le bitstream à configurer au FPGA,
+	\item\ les contextes enregistrés,
+	\item\ les nombres de cycles pour chaque tâche exécutée,
+	\item\ les jeux de vecteur d'entrées-sorties pour chaque tâche,
+	\item\ les sorties de chaque tâche et le résultat d'évaluation.
+\end{itemize}
+
 \section{Mesures et Résultat}
+\subsection{Validation de la commutation de contexte pour un IP simple}
+Un IP simple qui effectue un calcul multiplication et addition itérativement a été crée afin de valider la fonctionnalité de 
+l'architecture proposée dans le stage.
 
+\subsection{Validation de la commutation de contexte pour IDCT 2-D}
 
-\blindtext
+L'application IDCT\footnote{IDCT : Inverse Discrete Cosine Transform} 2-D est un sous-ensemble de «suite de test» CHStone
+qui est souvent utilisé pour valider l'outil de synthèse logique.
+
 
 \section{Analyse et Discussion}
 
-\blindtext

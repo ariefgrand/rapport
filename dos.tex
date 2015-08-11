@@ -1,5 +1,37 @@
-\thispagestyle{empty}
+\documentclass[a4paper,12pt,oneside,final,oldfontcommands]{memoir}
+\setulmarginsandblock{2cm}{2cm}{*}
+\setlrmarginsandblock{3cm}{3.5cm}{*}
+\checkandfixthelayout
+
+\usepackage[pdfpagelabels]{hyperref}
+\usepackage{pdfpages}
+\usepackage{memhfixc}
+\usepackage{amsmath}
+\usepackage{ragged2e}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\let\footruleskip\undefined
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{eurosym}
+\graphicspath{ {images/}{gantt/} }
+
+\usepackage[english,francais]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[OT1]{fontenc}
+\usepackage{times}
+\usepackage{url}
+\usepackage{blindtext}
+
+\setsecnumdepth{section}
+\setcounter{tocdepth}{1}
+\setcounter{maxsecnumdepth}{3}
+\renewcommand*{\cftappendixname}{Appendix\space}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\begin{document}
 \SingleSpacing
+\pagenumbering{gobble}
 \centering
 \begin{bfseries}
 DOS DU RAPPORT
@@ -7,7 +39,7 @@ DOS DU RAPPORT
 \begin{itshape}
 \justify
 \setlength{\parindent}{0pt}
-\underline{Etudiant (nom et pr\'enom) :} \hfill Ann\'ee d'\'etude dans le d\'epartment
+\underline{Etudiant (nom et prénom) :} \hfill Année d'étude dans le département
 
 WICAKSANA, Arief \hfill 2014/2015
 
@@ -15,46 +47,48 @@ WICAKSANA, Arief \hfill 2014/2015
 
 \underline{Entreprise :} GRENOBLE INP - INSTITUT POLYTECHNIQUE GRENOBLE
 
-\underline{Adresse compl\`ete :}
+\underline{Adresse complète :}
 
-46 Avenue F\'elix Viallet
+46 Avenue Félix Viallet
 
 38031 GRENOBLE, FRANCE 
 
-\underline{T\'elephone (standard) :} 04 76 82 63 30 \hfill T\'el\'ecopie : 04 76 82 63 00
+\underline{Téléphone (standard) :} 04 76 82 63 30 \hfill Télécopie : 04 76 82 63 00
 
 \rule{\textwidth}{1pt}
 
 \underline{Responsable administratif (nom et fonction) : } Mme. PLATEAU Brigitte
 
-\underline{T\'el\'ephone :} 06 71 98 16 42\hfill T\'el\'ecopie : 04 56 52 89 00
+\underline{Téléphone :} 06 71 98 16 42\hfill Télécopie : 04 56 52 89 00
 
-\underline{M\'el :} Brigitte.Plateau@grenoble-inp.fr
+\underline{Mél :} Brigitte.Plateau@grenoble-inp.fr
 
 \rule{\textwidth}{1pt}
 
-\underline{Ma\^itre de stage (nom et fonction) :} BOURGE Alban, Doctorant
+\underline{Maître de stage (nom et fonction) :} BOURGE Alban, Doctorant
 
-\underline{T\'el\'ephone :} 04 76 57 48 09\hfill T\'el\'ecopie :  \hspace{26 mm}
+\underline{Téléphone :} 04 76 57 48 09\hfill Télécopie :  \hspace{26 mm}
 
-\underline{M\'el :} Alban.Bourge@imag.fr
+\underline{Mél :} Alban.Bourge@imag.fr
 
 \rule{\textwidth}{1pt}
 
 \underline{Tuteur enseignant (nom et fonction) :} CORBINEAU Pierre, Enseignant
 
-\underline{T\'el\'ephone :} 04 56 52 04 42  \hfill T\'el\'ecopie : \hspace{26 mm}
+\underline{Téléphone :} 04 56 52 04 42  \hfill Télécopie : \hspace{26 mm}
 
-\underline{M\'el :} Pierre.Corbineau@ujf-grenoble.fr
+\underline{Mél :} Pierre.Corbineau@ujf-grenoble.fr
 
 \rule{\textwidth}{1pt}
 
 \underline{Titre :}
 
-Mise en \oe uvre d'un environnement de validation pour la migration de t\^aches sur FPGA \\
+Mise en œuvre d'un environnement de validation pour la migration de tâches sur FPGA \\
 
-\underline{R\'esum\'e :}
-
+\underline{Résumé :}
 
 \end{itshape}
+
 \end{bfseries}
+
+\end{document}

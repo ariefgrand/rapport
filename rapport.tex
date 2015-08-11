@@ -40,6 +40,7 @@
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
 
 \begin{document}
+\sloppy
 \pagenumbering{Alph}
 \begin{titlingpage}
 \include{title}
@@ -70,7 +71,7 @@
 \setlength{\parskip}{0pt}
 
 %reference that is not included in citation
-\nocite{ug585, ug980,ug835,zybomanual,zybotutorial}
+\nocite{ug585, ug980,ug835,zybomanual,zybotutorial,ac409,pg059}
 
 %reference style
 \bibliographystyle{acm}
@@ -80,6 +81,6 @@
 
 \includepdf[pages=-,addtotoc={1,chapter,1,Annexe 1 - Paper FPS2015,annexe1}]{paper}
 
-\include{dos}
+\includepdf{dos}
 
 \end{document}
