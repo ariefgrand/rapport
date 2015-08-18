@@ -1,78 +1,77 @@
-\chapter{Description du Sujet et Gestion de Stage}
+\chapter{Description du sujet et gestion de stage}
 \label{chap:sujet}
 \OnehalfSpacing
 
-\section{Description du Sujet de Stage}
+\section{Description du sujet de stage}
 \label{sec:sujet}
 
 Le laboratoire TIMA développe un mécanisme de sélection des points
 d'arrêts de l'exécution d'un traitement sur un FPGA. L'idée sous-jacente
 est de pouvoir arrêter une tâche sur un FPGA et de transférer la suite de
-l'exécution sur un autre FPGA.
-Ce mécanisme est connu sur le système à base de CPU 
-en tant que \emph{context switch} ou "commutation de contexte".
-Un contexte sur FPGA est définie comme une image de l'état des circuits configurés dans le FPGA.
+l'exécution sur un autre FPGA. Ce mécanisme est connu sur le système à base de CPU 
+en tant que \og commutation de contexte ou \emph{context switch} \fg.
+Un contexte sur FPGA est définie comme une image de l'état du circuit configuré dans le FPGA.
 
 La commutation de contexte en informatique consiste à sauvegarder
-l'état d'un processus pour restaurer à la place d'un autre dans le cadre de l'ordonnancement 
+l'état d'un processus pour mettre en place un autre dans le cadre de l'ordonnancement 
 d'un système d'exploitation. La commutation de contexte sur FPGA (cf. Section \ref{sec:contextswitch}) 
 effectue un traitement similaire sur des circuits logiques au lieu d'un système d'exploitation. 
 Elle est possible grâce aux blocs logiques programmables
 qui construisent la plateforme FPGA.
 
 Dans le cadre de sa thèse au laboratoire TIMA, M. Alban Bourge a proposé une méthode de la commutation 
-de contexte sur FPGA par l'extraction de l'image de l'état sur certains points de contrôle\cite{Bourge2015} ou \emph{checkpoint}. 
-Un algorithme a été ajouté à chaque IP\footnote{\emph{Intelectual Property}, dans ce contexte est le circuit programmé sur FPGA} lors de synthèse logique
-afin de choisir le meilleur point de contrôle selon les contraintes donnés par l'utilisateur.
+de contexte sur FPGA par l'extraction de l'image de l'état sur certains points de contrôle\cite{Bourge2015} ou \emph{checkpoints}. 
+Un mécanisme a été ajouté à chaque IP\footnote{\emph{Intelectual Property}, dans ce contexte est le circuit programmé sur FPGA} lors de la synthèse
+HDL\footnote{\emph{Hardware Description Language}} afin de choisir le meilleur point de contrôle selon les contraintes donnés par l'utilisateur.
 
-La réalisation de cette méthode a été faite par une méthode intégrée dans un outil de synthèse de haut niveau.
-Ceci est réalisable grâce à un outil de synthèse logique de haut-niveau AUGH\cite{Prost2014} 
+La réalisation de cette méthode a été faite par une méthode intégrée comme un greffon
+dans un outil de synthèse haut niveau ou de \emph{High Level Synthesis (HLS)}.
+Ceci est réalisable grâce à un outil de HLS AUGH\cite{Prost2014}
 qui a été développé par un chercheur postdoctoral au laboratoire TIMA.
-Le AUGH est capable de générer des IP 
-depuis un programme écrit en langage C. L'intégration de la méthode proposée par M. Alban Bourge sur AUGH 
+AUGH est capable de générer des IP 
+depuis un programme écrit en langage C. L'intégration de la méthode des \emph{checkpoints} sur AUGH 
 nous permet de générer un IP qui supporte les récupérations et restaurations de contexte sur FPGA.
 
 Pendant le projet 3i5, une plateforme a été construite pour valider des IP générés par AUGH automatiquement\cite{Brisebard2015, Wicaksana2015}.
-Cette plateforme de validation constitue un environnement de pilotage et une carte ZYBO\cite{zyboweb}
-connecté à un serveur qui contient un outil de back-end Xilinx. L'environnement de pilotage permet d'envoyer les
+Cette plateforme de validation constitue un environnement de pilotage dans une carte ZYBO\cite{zyboweb}.
+L'environnement de pilotage permet d'envoyer les
 vecteurs d'entrées, de recevoir les sorties et de les comparer avec la référence.
 Les interfaces entrées-sorties personnalisées sont ajoutées dans l'architecture pour transférer des données entrées-sorties.
-Cette plateforme est assez puissante pour construire un architecture à partir d'un IP généré par AUGH
-avec les interfaces automatiquement.
+Cette plateforme est assez puissante pour construire automatiquement un architecture pour FPGA à partir d'un IP généré par AUGH.
 
 En adaptant cette idée de la validation automatique du projet 3i5, un démonstrateur pour valider la migration de tâche sur FPGA et évaluer ses performances
-est proposée dans ce stage. Le démonstrateur constitue une plateforme programmable connecté au réseau 
+est proposée dans ce stage. Le démonstrateur est constitué d'une plateforme programmable connecté au réseau 
 accompagné par un environnement de pilotage comme dans le projet 3i5. L'IP généré par AUGH sera programmé dans la plateforme
 pour qu'on puisse l'exécuter.
 En plus de la validation des entrées et des sorties, ce démonstrateur permet d'effectuer la commutation de contexte.
 L'environnement de pilotage va permettre de synthétiser les IP, de commander l'arrêt de l'exécution, de récupérer le contexte, de
 transférer le contexte et de reprendre l'exécution.
 
-\section{Gestion de Stage}
+\section{Gestion de stage}
 \label{sec:gestion}
 \justify
-Afin d'augmenter l'efficacité du travail et d'atteindre le but du stage, un planning a été fait.
-Ce planning est présenté en diagramme de Gantt dans la Figure \ref{fig:gantt}. Pour trouver le meilleur délai
-dans le projet, la méthode PERT a été utilisé et un diagramme de PERT est présenté
+Dans le cadre de déroulement du stage, un planning a été fait.
+Ce planning est modélisé sous la forme d'un diagramme de Gantt dans la Figure \ref{fig:gantt}. Pour une meilleure planification du projet, 
+la méthode PERT a été utilisé. La liste de tâche sous la forme d'un diagramme de PERT est présenté
 dans la Figure \ref{fig:pert}.
 
 Dans la Figure \ref{fig:gantt}, le stage est divisé en quatre grandes parties. 
 La première partie est le développement matériel. Cette partie concerne 
-l'intégration de l'IP et ses interfaces. La deuxième partie est le développement de logiciel. Ce développement
+l'intégration de l'IP et ses interfaces. La deuxième partie est le développement logiciel. Ce développement
 concerne le système d'exploitation, les bibliothèques de logiciels qui seront embarqués et les scripts pour lancer le flot d'exécution.
 La troisième partie de stage est le test. Dans tous les développements de système, les tests sont nécessaires
 pour valider les composants (test unitaire) et l'intégration de tous les composants (test d'intégration). La dernière partie
 est la documentation de stage. Cette documentation inclut la rédaction du rapport et la préparation à la soutenance.
 
-Les premières deux semaines ont été consacrées pour modifier les interfaces E/S personnalisées. Ces interfaces
+Les deux premières semaines ont été consacrées à la modification des interfaces E/S personnalisées. Ces interfaces
 gèrent les entrées et les sorties de l'IP généré par AUGH. Pour valider la commutation de contexte,
 il faudrait s'assurer que l'application fonctionne correctement incluant les communications d'entrées-sorties.
-Dans le projet 3i5, les interfaces similaires sont utilisées, il suffit de les améliorer pour l'implémentation
+Dans le projet 3i5, des interfaces similaires sont utilisées. Il suffit de les améliorer pour l'implémentation
 de ce stage qui sera expliquée dans le Chapitre \ref{chap:implementation}.
 
-Après que les interfaces E/S sont finies et testées, le stage passe au développement de l'interface de la commutation
-de contexte pendant environ un mois. Afin d'évaluer les performances de système, l'utilisateur doit savoir le
-nombre des cycles passés pendant l'exécution, un timer est donc développé pendant deux semaines pour enregistrer
+Après la modification des interfaces E/S, l'étape prochain est le développement de l'interface de la commutation
+de contexte qui a été effectué pendant environ un mois. Afin d'évaluer les performances de système, l'utilisateur doit pouvoir connaitre le
+nombre des cycles d'exécution. Un timer est donc développé pendant deux semaines pour enregistrer
 le nombre des cycles de l'exécution et de la commutation de contexte. 
 
 Alors que la partie matérielle est développé pendant
@@ -81,30 +80,30 @@ Les bibliothèques de logiciels sont de fonctions supplémentaires ajoutées dan
 constitue deux parties, la génération de configuration à installer sur FPGA et application à exécuter lorsque la validation des
 migrations de tâches.
 
-Dans le stage, les tests sont effectués pendant tout au long de stage pour chaque composant et programme construites ainsi que ses intégrations. 
+Dans le stage, la phase de tests est effectuée en même temps que les développement matériel et logiciel ainsi que ses intégrations.
 Le test unitaire est réalisé en faisant les simulations fonctionnelles pour le développement de la partie matérielle.
-Le test de la partie logicielle est effectué par les compilations en GCC avant d'implémenter dans la plateforme.
+Le test de la partie logicielle est effectué par les compilations avec GCC avant l'implémentation sur la plateforme.
 Après que tous les composants soient intégrés,
 le test global/intégration est effectué en même temps que le développement de l'application pour FPGA. 
 
-Un mois et demi restant étant prévu pour le rédaction du rapport superposant le test d'intégration et la préparation
+Le mois et demi restant étant prévu pour le rédaction du rapport superposant le test d'intégration et la préparation
 de soutenance.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.9\textheight,angle=90]{stage2}
-	\caption{La diagramme de gantt de déroulement du stage}
+	\caption{La diagramme de Gantt de déroulement du stage}
 	\label{fig:gantt}
 	\vspace{-2mm}
 \end{figure}
 
 Les dépendances entre les tâches sont présentées dans la Figure \ref{fig:pert}. 
-Les 4 grandes parties du diagramme de Gantt sont présentées dans la figure par les 4 branches de la graphe.
-Les dates de fin plus tôt et plus tard sont mis dans chaque noyau. Le chemin critique est montré par le noyau
-Test Unitaire au Test Global. Ce sont les tâches les plus importantes et les plus longues car
-elles valident les travaux effectués dans le stage. La durée de test unitaire est prévu comme la durée de développement
-matériel additionné avec la durée de développement logiciel s'ils sont fait en séquence. La durée de test global est prévu
-comme la durée de développement de l'application de la migration de tâche.
+Les 4 grandes parties du diagramme de Gantt sont présentées dans la figure par les 4 branches du graphe.
+Les dates de fin \og plus tôt \fg et \og plus tard \fg sont mises dans chaque noyau. Le chemin critique du diagramme PERT
+dans la figure est Début $\rightarrow$ Test Unitaire $\rightarrow$ Test Global $\rightarrow$ Fin. Ce sont les tâches les plus importantes et les plus longues car
+elles valident les travaux effectués dans le stage. 
+Le test unitaire est réalisé pendant le développement matériel et logiciel. Le test global est fait pour l'integration
+du système et développement de l'environnement pilotage.
 
 \begin{figure}[h]
 	\centering

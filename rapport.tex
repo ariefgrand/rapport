@@ -13,28 +13,27 @@
 \let\footruleskip\undefined
 \usepackage{fancyhdr}
 \usepackage{enumitem}
+\setlist{parsep=0pt,listparindent=\parindent}
 \usepackage{eurosym}
 \graphicspath{ {images/}{gantt/} }
-
+\usepackage{xcolor,colortbl}
 \usepackage[english,francais]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[OT1]{fontenc}
 \usepackage{times}
 \usepackage{url}
-\usepackage{blindtext}
 
-\fancyhf{}
-\pagestyle{fancy}
-\lhead{--- DRAFT ---}
-\rhead{\leftmark}
-\rfoot{\thepage}
-\lfoot{
-	\includegraphics[height=0.5cm]{logotima} 
-	\includegraphics[height=0.5cm]{logopolytech}
-}
-
+%\fancyhf{}
+\pagestyle{plain}
+%\lhead{--- DRAFT ---}
+%\rhead{\leftmark}
+%\rfoot{\thepage}
+%\lfoot{
+%	\includegraphics[height=0.5cm]{logotima} 
+%	\includegraphics[height=0.5cm]{logopolytech}
+%}
 \setsecnumdepth{section}
-\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{3}
 \setcounter{maxsecnumdepth}{3}
 \renewcommand*{\cftappendixname}{Appendix\space}
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
@@ -53,6 +52,8 @@
 \tableofcontents
 \clearpage
 \listoffigures
+\clearpage
+\listoftables
 \mainmatter
 \include{introduction}
 \clearpage
