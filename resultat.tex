@@ -1,16 +1,16 @@
 \chapter{Implémentation et résultat}
 \label{chap:implementation}
-L'implémentation dans le cadre de stage utilise une carte électronique ZYBO\cite{zyboweb}
-comme plateforme principale. ZYBO qui est conçue par Digilent emploi un SoC Programmable de la famille Zynq-7000 conçue par Xilinx.
+L'implémentation est faite sur une carte électronique ZYBO\cite{zyboweb}, 
+conçue par Digilent. Elle emploi un SoC Programmable de la famille Zynq-7000 conçue par Xilinx.
 Elle est choisie en raison de ses hautes performances, ses riches fonctionnalités et son faible prix. 
-Comme un SoC Programmable, ZYBO nous permet d'implémenter
+En tant que SoC Programmable, la carte ZYBO nous permet d'implémenter
 un matériel dans son FPGA accompagnée par une application logicielle dans son processeur ARM.
 
 Dans le projet du stage, la plateforme ZYBO n'est pas suffisante afin d'effectuer la validation de
 la commutation de contexte. Un FPGA peut être programmé à partir d'un fichier de configuration (\emph{bitstream}).
 Ce fichier est généré par l'outil de backend selon le fabricant du FPGA utilisé.
-Même que ZYBO est assez performante comme SoC, sa puissance n'est pas suffisante pour
-installer un outil de backend Xilinx. Dans le cadre de stage, un serveur avec un outil de backend Xilinx installé est réservé uniquement pour la génération de
+Même si la carte ZYBO est assez performante, sa puissance n'est pas suffisante pour
+installer un outil de backend Xilinx. Dans le cadre du stage, un serveur avec un outil de backend Xilinx est réservé pour la génération de
 \emph{bitstream} (cf Section \ref{sec:serveur}).
 
 Afin de faciliter le fort traffic des données entre ZYBO, serveur et l'utilisateur, un stockage en réseau
@@ -19,73 +19,73 @@ qui sera expliqué à la partie suivante (cf. Section \ref{sec:nfs}).
 
 \section{Serveur}
 \label{sec:serveur}
-Dans le cadre de stage, un serveur est réservé pour un outil de Xilinx.
+Dans le cadre du stage, un serveur est réservé pour un outil de Xilinx.
 Pour un développement d'un projet Zynq, l'outil choisi est Xilinx Vivado Design Suite.
-Cet outil est nécessaire pour transformer l'ensemble de l'IP en HDL en fichier \emph{bitstream} après
-intégrer toutes les IPs dans un \emph{wrapper} de matériel.
+Cet outil est nécessaire pour transformer l'ensemble du code en HDL en fichier \emph{bitstream} après
+intégrer toutes les IP dans un \emph{wrapper} matériel.
 La version de Vivado utilisé est Vivado 2014.4 64-bit.
 
 L'utilisation de Vivado permet la conception de l'architecture matérielle en mode \emph{batch}, c'est-à-dire sans interface
 graphique. Ce mode consomme moins de ressource et il est accessible depuis un script bash.
 La génération du fichier \emph{bitstream} en mode batch est réalisé depuis
-l'application principale dans ZYBO. Pour cela,
-le serveur utilise comme spécification un processeur Intel Xeon (2.8 GHz, 8 Mo L3, quadri-cœur)
+l'application principale dans la carte ZYBO.
+Le serveur utilisé possède un processeur Intel Xeon (2.8 GHz, 8 Mo L3, quadri-cœur)
 avec 12 Go de mémoire vive et un système d'exploitation Debian 7.
 
 \section{Stockage en réseau \emph{Network File System} (NFS)}
 \label{sec:nfs}
-Dans le cadre de développement du système, une méthode pour échanger les données 
+Dans le cadre du développement du système, une méthode pour échanger les données 
 entre la plateforme, le serveur et l'utilisateur est nécessaire.
-Les données sont envoyées entre les éléments du démonstrateur mais sont aussi enregistrées pour l'utilisation ultérieurement,
-par exemple les contextes. Le temps passé dans une tâche est aussi enregistré et qu'il sera restauré lorsque la tâche est reprise.
-L'enregistrement des données en fichier binaire est choisi afin de faciliter ces échanges de données.
+Les données sont envoyées entre les éléments du démonstrateur mais sont aussi enregistrées pour une utilisation ultérieure 
+(par exemple les contextes). Le temps passé dans une tâche est aussi enregistré puis restauré lorsque la tâche est reprise.
+L'enregistrement des données en fichier binaire est choisi afin de faciliter ces échanges.
 Il est nécessaire d'utiliser un protocole réseau qui permet de faciliter les transferts des fichiers entre les utilisateurs,
 le serveur et la plateforme ZYBO.
 
-Après  avoir considéré le niveau de complexité et la performance, le NFS
+Après  avoir considéré un niveau de complexité et une performance maximale, NFS
 est choisi pour effectuer le stockage en réseau.
 L'implémentation du disque NFS a besoin deux paquet : \emph{nfs-kernel-server} du côté du serveur et \emph{nfs-common} du côté du client.
-Le paquet du client n'est pas nécéssaire pour ZYBO car Petalinux intègre déjà la configuration du client NFS 
-dans son noyau (en autorisant \emph{portmap} dans la configuration permet le montage de disque NFS au Zynq). 
-La configuration de disque NFS peut se faire dans le fichier \emph{/etc/exports}.
+Le paquet client n'est pas nécéssaire pour la carte ZYBO car le système d'exploitation utilisé (cf. Section \ref{subsec:petalinux} intègre déjà la configuration du client NFS 
+dans son noyau (en autorisant \emph{portmap} qui permet le montage de disque NFS au Zynq). 
+La configuration d'un disque NFS peut se faire dans le fichier \emph{/etc/exports}.
 
-Le stockage en réseau NFS dans le stage conserve les fichiers suivants :
+Le stockage NFS sera utilisé pour stocker les fichiers suivants :
 \begin{itemize}
 	\item\ les fichier \emph{bitstream} ou configuration du FPGA,
-	\item\ les fichiers de contextes déjà enregistrés,
-	\item\ les fichier des nombres de cycles pour chaque tâche exécutée,
+	\item\ les fichiers de contexte déjà enregistrés,
+	\item\ les fichiers des nombres de cycles pour chaque tâche exécutée,
 	\item\ les jeux de vecteurs d'entrées-sorties pour chaque tâche,
 	\item\ les fichier des sorties de chaque tâche et le résultat d'évaluation.
 \end{itemize}
 
 \section{Implémentation matérielle}
 \label{sec:materiel}
-L'architecture matérielle repose sur Z-7010 de ZYBO qui est constitué d'un \emph{Processing System} (PS) 
+L'architecture matérielle repose sur le SoC Z-7010. Il est constitué d'un \emph{Processing System} (PS) 
 basé sur le processeur ARM Cortex-A9 double cœur et une \emph{Programmable Logic} (PL), 
-fréquencé à 100 MHz. Ce dispositif intègre aussi une mémoire DDR3,
-un contrôleur Ethernet et les autres éléments périphériques. 
+fréquence à 100 MHz. Ce dispositif intègre aussi une mémoire DDR3,
+un contrôleur Ethernet et d'autres éléments périphériques. 
 
 Le diagramme de l'architecture matérielle implémentée dans notre système est présenté sur la Figure \ref{fig:hard}.
-La communication entre la partie PS et PL utilise le protocole AXI4 à travers un port AXI générique
+La communication entre les parties PS et PL utilise le protocole AXI4 à travers un port AXI générique
 de 32-bit. Le processeur devient le maître du système et les esclaves sont l'IP testée 
-(marqué par DUT\footnote{\emph{Design Under Test}} dans la figure) et les autres IPs dans la PL.
+(marqué par DUT\footnote{\emph{Design Under Test}} dans la figure) et les autres IP dans la PL.
 La communication entre maître et esclave avec le port AXI générique est gérée par le processeur via le Central Interconnect. 
-Le Central Interconnect est responsable de connecter le processeur à toutes les interfaces et de multiplexer
-la communication à la bonne interface.
+Le Central Interconnect connecte le processeur à toutes les interfaces et dirige
+les communication aux bonnes interfaces.
 Le processeur va effectuer la lecture et l'écriture de la mémoire DDR aux interfaces AXI dans la PL.
 
 Pour la communication à travers le port AXI générique de 32-bit, l'interface AXI4-Lite est utilisée.
 L'interface AXI4-Lite est un sous-ensemble de protocole AXI4 utilisé pour une communication
 plus simple et un contrôle de registre plus petit dans le composant. Vivado est capable de générer
 l'interface AXI4-Lite pré-construite. Dans notre système, cette interface est
-intégrée dans les IPs pour qu'elles puissent communiquer en protocole AXI.
-Pour la future implémentation plus performante, une solution avec le port AXI \emph{high performance} qui sont
-connectées directement à la mémoire DDR est envisageable. 
+intégrée dans les IP pour qu'elles puissent communiquer en protocole AXI.
+Pour une future implémentation plus performante, une solution avec le port AXI \emph{high performance} qui est
+connecté directement à la mémoire DDR est envisageable. 
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.75\textwidth]{hardware}
-	\caption{La diagramme de l'architecture matérielle}
+	\caption{Diagramme de l'architecture matérielle}
 	\label{fig:hard}
 	\vspace{-2mm}
 \end{figure}
@@ -93,103 +93,104 @@ connectées directement à la mémoire DDR est envisageable.
 \subsection{Interfaces \emph{Input AXI} et \emph{Output AXI}}
 
 Dans la Figure \ref{fig:hard}, le DUT est connecté au port AXI générique par les interfaces d'entrées-sorties personnalisées,
-\emph{Input AXI} et \emph{Output AXI} à travers des FIFOs. Ces FIFOs sont ajouté à ces interfaces
-afin de mettre les données qui sont reçues ou envoyées en tampon.
-Les FIFOs dans les interfaces sont importants car le DUT n'utilise pas le protocole
-de communication AXI et il n'a pas forcement la même largeur des données que le bus AXI. 
+\emph{Input AXI} et \emph{Output AXI} à travers des FIFO. Ces FIFO sont ajoutées
+afin de mettre en tampon les données qui sont reçues ou envoyées.
+Les FIFO sont importantes car le DUT n'utilise pas le protocole
+de communication AXI et il n'a pas forcement la même largeur de données que le bus AXI. 
 Ces différences peuvent générer un effet d'étranglement lorsque les données sont envoyées.
 
-Les \emph{Input AXI} et \emph{Output AXI} communiquent avec le bus AXI à travers l'interface AXI4-Lite.
+\emph{Input AXI} et \emph{Output AXI} communiquent avec le bus AXI à travers l'interface AXI4-Lite.
 Le DUT utilise le protocole de poignée de main (Data, Ready et Ack) pour
 la communication en E/S alors que l'interface AXI4-Lite met en œuvre le protocole AXI.
-Ce sont deux protocoles différents, donc la conversion entre eux devrait être nécessaire. 
-Les \emph{Input AXI} et \emph{Output AXI}
-facilitent la conversion de protocole qui permettent à la partie PS et DUT de communiquer.
+Ce sont deux protocoles différents, donc la conversion entre eux est nécessaire. 
+\emph{Input AXI} et \emph{Output AXI}
+effectuent la conversion de protocole qui permettent à la partie PS et DUT de communiquer.
 
-En plus, la largeur de données entre le bus AXI et le DUT peuvent être différente.
-La largeur de données du bus AXI est 32-bit et celle du DUT est variable dépendant de l'application
-exécuté, montré par N et M dans la Figure \ref{fig:hard}. Une modification des interfaces est nécessaire afin
+De plus, la largeur de données entre le bus AXI et le DUT peut être différente.
+La largeur de données du bus AXI est de 32 bit et celle du DUT est dépendante de l'application
+exécutée (N et M dans la Figure \ref{fig:hard}). Une modification des interfaces est nécessaire afin
 de surmonter ce problème. Chaque fois que le DUT est généré, ses paramètres sont
 lus et les valeurs de N et M sont ajustées avant la génération du \emph{bitstream} dans Vivado. 
 
-Afin de transférer les données du bus AXI au DUT ou au sens inverse, un mécanisme de découpage et assemblage
-des données est utilisé dans l'interface. Si le DUT a une entrée de N-bit, 
-chaque mot de 32-bit qui vient du bus AXI est converti à $\frac{32}{N}$ mot de N-bit par \emph{Input AXI}. De même,
-si les sorties du DUT sont M-bit, \emph{Output AXI} va assembler $\frac{32}{M}$ sorties à un mot de 32-bit avant qu'il envoie
-au bus AXI. Ce principe a été inventé dans le projet 3i5 et son implémentation est améliorée dans ce stage.
+Afin de transférer les données du bus AXI au DUT ou inversement, un mécanisme de découpage et assemblage
+des données est utilisé dans l'interface. Si le DUT a une entrée de N bit, 
+chaque mot de 32 bit qui vient du bus AXI est converti en $\frac{32}{N}$ mot de N bit par \emph{Input AXI}. De même,
+si les sorties du DUT sont de M bit, \emph{Output AXI} va assembler $\frac{32}{M}$ sorties en un mot de 32 bit avant de l'envoyer
+au bus AXI. Ce principe a été utilisé dans le projet 3i5 et son implémentation est améliorée dans ce stage.
 
 Dans le projet 3i5, la conversion a été réalisée pour chaque mot de 32-bit du bus AXI. Un tableau d'une dimension
 est utilisé pour conserver les entrées de \emph{Input AXI} et de \emph{Output AXI}. 
-Ensuite, les sorties sont générées par le traitement de découpage ou assemblage expliqué auparavant.
-Dans le cadre de stage, l'implémentation de tampon de \emph{Input AXI} et \emph{Output AXI} est améliorée. 
+Ensuite, les sorties sont générées par le découpage ou assemblage expliqué auparavant.
+Dans le cadre de stage, l'implémentation de tampon dans \emph{Input AXI} et \emph{Output AXI} est améliorée. 
 Un tampon représenté par un tableau de deux dimensions est utilisé. 
-La taille de tampon est variable dépendant de la largeur des ports du DUT.
+La taille du tampon varie en fonction de la largeur des ports du DUT.
 Bien que le nombre de lignes de tableau soit fixe, le nombre de colonnes est variable. La taille du tampon
 sera $ A\,ligne \times B\, colonne$ avec $B = \frac{largeur \, des \, donn\acute{e}es \, AXI }{largeur \, des \, donn\acute{e}es \, DUT} $.
-Les données sont découpées ou assemblées dès qu'elles sont acceptées pour minimiser le délai de
-traitement des données.
-Les données du bus AXI sont mises en tampon et divisées en plusieurs sorties vers le DUT dans \emph{Input AXI}.
-Alors que les sorties du DUT sont réunies et mises en tampon en une sortie vers le bus AXI dans \emph{Output AXI}.
+Les données sont découpées ou assemblées dès qu'elles sont acceptées pour minimiser leur délai de
+traitement.
+Les données du bus AXI sont mises en tampon et divisées en plusieurs sorties vers le DUT dans \emph{Input AXI},
+alors que les sorties du DUT sont réunies et mises en tampon en une sortie vers le bus AXI dans \emph{Output AXI}.
 Avec cette méthode, les interfaces sont capable d'envoyer des sorties consécutives à chaque coup d'horloge
 afin d'éviter l'effet d'étranglement même si les largeurs des données en E/S sont différentes.
 
-\subsection{Contrôleur} %need to be modified
+\subsection{Contrôleur}
 
-Le contrôleur (\emph{Controller} dans de l'architecture matérielle existe pour deux fonctions : le contrôle
+Le contrôleur (\emph{Controller} dans de l'architecture matérielle) existe pour deux fonctions : le contrôle
 de l'exécution et le tampon de contexte.
 
 Pour la première fonction, le contrôleur est conçu pour démarrer l'exécution, arrêter l'exécution à un
-\emph{checkpoint} et continuer l'exécution à partir d'un \emph{checkpoint}. Il envoie des signaux nécessaire
-aux autres IPs et DUT pour contrôler les étapes d'exécution.
+\emph{checkpoint} et continuer l'exécution à partir d'un \emph{checkpoint}. 
+Il envoie des signaux nécessaire aux autres IP et au DUT pour contrôler les étapes d'exécution.
 Les commandes sont générées par le processeur à partir de l'application implémentée par l'utilisateur. Cette application va déterminer
-les fonctions effectuées et les données envoyées au contrôleur. Les données sont traduites à la commande
+les fonctions à effectuer et les données envoyées au contrôleur. Les données sont traduites en une commande
 correspondante par l'algorithme du contrôleur.
 
-La deuxième fonction du contrôleur est pour tamponner le contexte enregistré du DUT ou à restaurer au DUT.
-Lorsque la commutation de contexte, un protocole particulier est réalisé pour enregistrer ou restaurer le contexte.
-En raison d'efficacité et de synchronisation, le tampon de contexte est mis dans le contrôleur en plus de l'algorithme
-qui gère le protocole. La largeur des données du tampon est variable selon les contraintes de l'utilisateur implémentées au DUT
+La deuxième fonction du contrôleur est de mettre en tampon ou restaurer le contexte du DUT.
+Lors de la commutation de contexte, un protocole particulier est réalisé pour enregistrer ou restaurer le contexte.
+Pour des raisons d'efficacité et de synchronisation, le tampon de contexte est mis dans le contrôleur en plus de l'algorithme
+qui gère le protocole. La largeur des données du tampon est variable selon les contraintes que l'utilisateur a donné
 lorsque le mécanisme des \emph{checkpoints} est ajouté.
-Actuellement, il y a deux possibilités de largeur des données, 32 ou 64 bits.
+Actuellement, il y a deux possibilités pour la largeur des données : 32 ou 64 bits.
 
 \subsection{Timer}
-
-Lors de l'exécution d'une application, il y a trois données qui sont importantes afin d'évaluer les performances
+\label{subsec:timer}
+Lors de l'exécution d'une application, trois données sont importantes afin d'évaluer les performances
 du DUT. Ce sont les données suivantes :
 \begin{itemize}
-	\item\ le nombre de cycles besoin depuis la première entrée jusqu'à la dernière sortie,
-	\item\ le nombre de cycles besoin pour arriver au prochain \emph{checkpoint},
-	\item\ le nombre de cycles besoin pour extraire le contexte d'un \emph{checkpoint}.
+	\item\ le nombre de cycles d'exécution depuis la première entrée jusqu'à la dernière sortie,
+	\item\ le nombre de cycles d'exécution pour arriver au prochain \emph{checkpoint},
+	\item\ le nombre de cycles d'exécution pour extraire le contexte d'un \emph{checkpoint}.
 \end{itemize}
-Le Timer est conçu pour enregistrer ces trois données dans ses registres. Lorsque le processeur demande,
-les données seront envoyées vers le bus AXI à la mémoire.
+Le Timer est conçu pour enregistrer ces trois données dans ses registres. Lorsque le processeur le demande,
+les données sont envoyées vers le bus AXI puis à la mémoire.
 
 \section{Implémentation logicielle}
 \label{sec:logiciel}
-Comme une plateforme basée sur SoC programmable, Zynq est capable de lancer une application \emph{standalone}
+En tant que plateforme basée sur SoC programmable, la puce Zynq est capable de lancer une application sans système d'exploitation
 ou une application embarquée dans un système d'exploitation (Linux embarqué). Dans ce projet,
-Petalinux, une distribution de Linux embarqué, est installée dans le processeur ARM de ZYBO.
-Cette approche donne des avantages plus que l'application \emph{standalone} lors de la reconfiguration FPGA ainsi que pour la communication via
+Petalinux, une distribution de Linux embarqué, est installée dans le processeur ARM.
+Cette approche donne des avantages para rapport à l'application sans 
+système d'exploitation lors de la reconfiguration du FPGA ainsi que pour la communication via
 AXI4 car tous les drivers sont déjà présents dans système d'exploitation.
-Dans le cadre de stage, l'application souhaitée et les bibliothèques de logiciels
+Dans le cadre du stage, l'application souhaitée et les bibliothèques de logiciels
 sont intégrées dans Petalinux.
 
 \subsection{Système d'exploitation Petalinux} % need to be modified
-
+\label{subsec:petalinux}
 Petalinux est un système d'exploitation embarqué, léger et dédié aux dispositifs Xilinx. 
-Dans ce stage, Petalinux utilisé est la version de Petalinux 2014.4 64-bit.
-Le démarrage de Petalinux est effectué dans le processeur ARM de ZYBO depuis
+Dans ce stage, on utilise la version 2014.4 64-bit Petalinux.
+Le démarrage de Petalinux est effectué par le processeur ARM de la plateforme Zynq depuis
 les fichiers de démarrage. 
 
 Les fichiers de démarrage de Petalinux sont générés par le compilateur de Petalinux.
 Ce compilateur permet de configurer Petalinux avec tous les drivers souhaités.
 Il est aussi possible d'ajouter des bibliothèques de logiciels dans la configuration
-afin de pouvoir les accéder depuis le Petalinux. 
-L'application principale est ajoutée après la compilation parce qu'il est développée
+afin de pouvoir y accéder depuis Petalinux. 
+L'application principale est ajoutée après la compilation parce que développée
 en script bash.
 
 Après la configuration de Petalinux, la compilation est effectué pour générer les fichiers de démarrage
-qui vont être utilisés pour démarrer le système d'exploitation à ZYBO.
+qui vont être utilisés pour démarrer le système d'exploitation sur la carte ZYBO.
 Le compilateur de Petalinux est installé dans un poste de travail avec comme spécification un 
 processeur Intel Xeon (2.8 GHz, 8 Mo L3, quadri-cœur)
 avec 12 Go de mémoire vive et un système d'exploitation Debian 7.
@@ -197,15 +198,15 @@ avec 12 Go de mémoire vive et un système d'exploitation Debian 7.
 \subsection{Bibliothèques de logiciels} % need to be modified
 \label{subsec:embedded}
 
-Cette partie expliques le développement des bibliothèques de logiciels.
+Cette partie explique le développement des bibliothèques de logiciels.
 Les bibliothèques de logiciels sont développées en langage C et ajoutées en complément
 des drivers natifs de Petalinux. Elles sont compilées avec le fichier de démarrage de Petalinux et intégrées dans son noyau. 
 Les bibliothèques de logiciels développées dans le stage sont génériques, c'est-à-dire qu'elles
-sont utilisables à n'importe quelle application réalisée. 
+sont utilisables par n'importe quelle application. 
 
-Dans le cadre de stage, les bibliothèques de logiciels sont développées pour exécuter les fonctions
-souhaitées pour la validation de la commutation de contexte (cf. Section \ref{sec:concepsoft}).
-Ces bibliothèques de logiciels sont les suivantes : 
+Dans le cadre du stage, les bibliothèques de logiciels sont développées pour exécuter les fonctions
+souhaitées pour valider la commutation de contexte (cf. Section \ref{sec:concepsoft}).
+Ces bibliothèques logicielles sont les suivantes : 
 
 \begin{itemize}
 	\item\
@@ -213,64 +214,64 @@ Ces bibliothèques de logiciels sont les suivantes :
 	
 	Elle est utilisé pour exécuter la lecture ou l'écriture à une adresse de l'interface AXI. Les données lues sont
 	des nombres entiers 32-bit. Elle est utile notamment pour envoyer les commandes au Contrôleur et pour lire
-	le contenu d'un registre de AXI4-Lite pendant le développement.
+	le contenu d'un registre de AXI4-Lite pendant la phase de développement.
 
 	\item\	
 	read\_axi :
 	
 	Elle fait la lecture des sorties de l'interface \emph{Output AXI}, 
-	l'écriture des sorties dans un fichier et le stockage de fichier au disque NFS.
+	l'écriture des sorties dans un fichier et le stockage de fichier sur le disque NFS.
 	
 	\item\
 	write\_axi :
 	
-	Elle fait la récupération du fichier des entrées du disque NFS, la lecture du fichier et l'écriture des entrées
-	à l'interface \emph{Input AXI}.
+	Elle effectue la le lecture du fichier des entrées stocké sur le disque NFS et l'écriture des entrées
+	à travers de l'interface \emph{Input AXI}.
 
 	\item\
 	compare\_axi :
 	
 	Elle exécute la comparison des sorties du DUT avec la référence.
 	L'avantage de cette fonction par rapport à la fonction de comparison \emph{diff} 
-	en Linux est qu'elle peut montrer le résultat et énumérer les sorties qui sont les erreurs.
+	est qu'elle peut montrer le résultat et énumérer les sorties fausses.
 
 	\item\
 	read\_cp :
 
-	Elle fait la lecture de contexte récupéré auprès du DUT dans le Controller, 
-	l'écriture de contexte dans un fichier et le stockage du fichier de contexte au disque NFS.
+	Elle fait la lecture du contexte récupéré auprès du DUT dans le Controller, 
+	l'écriture du contexte dans un fichier et le stockage du fichier de contexte sur le disque NFS.
 	
 	\item\
 	write\_cp :
 	
-	Elle fait la récupération du fichier de contexte du disque NFS, la lecture du fichier et l'écriture de contexte
-	au tampon dans le Contrôleur.
+	Elle fait la récupération du fichier de contexte sur le disque NFS, la lecture du fichier et l'écriture du contexte
+	dans le tampon du Contrôleur.
 	Le contexte va être restauré dans le DUT par le Controller pour continuer la suite de l'exécution.
 	
 	\item\
 	save\_time :
 	
-	Elle fait la lecture du Timer pour le nombre des cycles d'exécution d'application, le nombre des cycles d'attente pour arriver à un \emph{checkpoint}
+	Elle fait la lecture du Timer pour le nombre des cycles d'exécution de l'application, le nombre des cycles d'attente pour arriver à un \emph{checkpoint}
 	et le nombre des cycles d'extraction du contexte. Ensuite, ces trois données sont enregistrées dans un
-	fichier de cycles et stockées dans le disque NFS.
+	fichier et stockées dans le disque NFS.
 	
 	\item\
 	load\_time :
 	
-	Elle fait la récupération du fichier de cycles du disque NFS, la lecture des données et le chargement de
-	données au Timer afin que le compteur de cycles ne recommence pas depuis 0 quand une application
-	est reprise dans le système.
+	Elle fait la récupération du fichier qui contient les données temporelles (cf. Section \ref{subsec:timer}) depuis le disque NFS, la lecture des données et le chargement des
+	données dans le Timer afin que le compteur de cycles ne recommence pas depuis zéro quand une application
+	est restaurée.
 
 \end{itemize}
 
 \subsection{Script bash} %this part is modified
 Cette partie explique l'application implémentée au niveau logiciel pour la validation du
-mécanisme de \emph{context switch} et l'évaluation de des performances.
+mécanisme de \emph{context switch} et l'évaluation de ses performances.
 L'application sous la forme de script bash est conçue pour lancer le flot d'exécution automatiquement. 
-Comme déjà expliqués dans la Section \ref{subsec:embedded}, l'application principale accède les
-bibliothèques de logiciels intégrées dans le système d'exploitation afin de faire les fonctions.
-Cette application principale est constitué de deux scripts : l'une exécutée sur le serveur et l'autre
-sur ZYBO. Ces exécutions sont indépendantes et peuvent être
+Comme déjà expliqué dans la Section \ref{subsec:embedded}, l'application principale accède aux
+bibliothèques de logiciels intégrées dans le système d'exploitation afin d'en utiliser les fonctions.
+Cette application principale est constitué de deux scripts : l'un exécuté sur le serveur et l'autre
+dans l'ARM. Ces exécutions sont indépendantes et peuvent être
 lancées parallèlement. Lorsque le \emph{script\_server} est appelé, il prend
 l'IP généré par AUGH et il exécute un processus sur le serveur. Le \emph{script\_zybo}
 lance l'exécution sur la plateforme.
@@ -279,17 +280,17 @@ lance l'exécution sur la plateforme.
 	\item\
 	\emph{script\_server} :
 	
-	Après la génération de l'IP par l'outil de HLS AUGH, la suite est exécutée avec ce script. Le \emph{script\_server}
+	Après la génération de l'IP par l'outil de HLS AUGH, la suite du flot de synthèse est exécutée avec ce script. Le \emph{script\_server}
 	cherche les paramètres nécessaires afin de modifier les interfaces personnalisées et lance Vivado pour la génération
 	de l'architecture matérielle en mode de \emph{batch}. Le script exécute la synthèse, le placement et le routage du circuit et 
 	la génération de bitstream dans Vivado, ensuite il sauvegarde le bitstream sur le stockage en réseau.
-	Il met aussi les vecteurs de test, la référence et le fichier de configuration avec un nom défini.
+	Il renomme enfin les vecteurs de test, la référence et le fichier de configuration.
 
 	\item\
 	\emph{script\_zybo} :
 	
 	Le \emph{script\_zybo} cherche le bitstream dans le stockage en réseau. Il exécute la reconfiguration du FPGA et démarre
-	l'application sur le FPGA. Comme Petalinux intègre le driver de reconfiguration \emph{devcfg}, elle peut
+	l'application sur le FPGA. Comme Petalinux intègre le driver de reconfiguration \emph{devcfg}, celle-ci peut
 	être faite par une commande \emph{xdevcfg}. L'environnement de test est lancé avec les vecteurs de test et les sorties
 	sont comparées avec la référence. Ce processus est exécuté dans un ordre séquentiel et il est répétable pour des
 	bitstreams et des vecteurs de test différents.
@@ -298,48 +299,48 @@ lance l'exécution sur la plateforme.
 
 \section{Mesures et résultat} %need to be completed
 
-La validation de mécanisme des \emph{checkpoints} a été effectuée avec le démonstrateur expliqué dans les parties précédentes.
-Après la génération du fichier \emph{bitstream}, une application est implémentée sur ZYBO. Cette application est constituée
+La validation de mécanisme des \emph{checkpoints} a été effectuée avec le démonstrateur présenté dans les parties précédentes.
+Après la génération du fichier \emph{bitstream}, une application est implémentée sur la carte ZYBO. Cette application est constituée
 d'une tâche qui est exécutée deux fois avec deux différentes entrées (les entrées 1 et les entrées 2). Le calendrier de l'application
 est illustré dans la Figure \ref{fig:application}
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.95\textwidth]{application}
-	\caption{Le calendrier de l'application implémentée sur le démonstrateur}
+	\caption{Calendrier de l'application implémentée sur le démonstrateur}
 	\label{fig:application}
 	\vspace{-2mm}
 \end{figure}
 
-L'exécution est commencé par la configuration du FPGA depuis le fichier \emph{bitstream}. L'ensemble de l'IP
-dans le wrapper de matériel (cf. Section \ref{sec:materiel}) est implémenté avec les entrées 1.
-Au milieu de tâche, au temps $t_1$, l'arrêt de tâche est demandé. L'application se déroule encore
-pendant le temps $t_c$ jusqu'elle est arrivée
-au \emph{checkpoint} . Ensuite, la récupération de contexte est réalisé pendant le temps
-$t_s$. Dès que le contexte est récupéré, la tâche est réinitialisée et exécutée avec les entrées 2 jusqu'elle se termine (pendant $t_a$).
-La tâche arrêtée au $t_1$ est reprise et continuée après réinitialisation jusqu'à la terminaison (pendant $t_2$). 
+L'exécution débute par la configuration du FPGA depuis le fichier \emph{bitstream}. L'ensemble de l'IP
+dans le \emph{wrapper} matériel (cf. Section \ref{sec:materiel}) est alimenté avec les entrées 1.
+Au milieu de la tâche, au temps $t_1$, l'arrêt de tâche est demandé. L'application se déroule encore
+pendant le temps $t_c$ jusqu'elle rencontre
+un \emph{checkpoint} . Ensuite, la récupération de contexte est réalisé durant le temps
+$t_s$. Dès que le contexte est récupéré, la tâche est réinitialisée et exécutée avec les entrées 2 jusqu'elle se termine (temps total $t_a$).
+La tâche arrêtée à $t_1$ est restauré après réinitialisation jusqu'à sa terminaison ($t_2$). 
 A la fin, un post-traitement est fait afin d'évaluer les résultats et les performances du système.
 
 Le temps $t_a$ peut être considéré comme le temps d'exécution pour une tâche complète,
 qui peut être calculé par $t_1 + t_c + t_2$. Le temps $t_1$ est le temps quand l'arrêt de tâche est demandé
 depuis le démarrage de tâche. Il est déterminé par l'utilisateur. Le temps $t_c$ est la latence maximum déterminée
-par le mécanisme des \emph{checkpoints} selon les contraintes données. Et le temps $t_2$ est
+par le mécanisme des \emph{checkpoints} selon les contraintes données. Enfin, le temps $t_2$ est
 le temps restant de l'exécution.
 
-La configuration est faite qu'une seule fois pour être sûr que la mémoire est réécrite pendant la restauration
+La configuration n'est faite qu'une seule fois pour être sûr que la mémoire soit réécrite pendant la restauration
 de contexte. Le \emph{reset} ne va réinitialiser que les registres, mais pas les mémoires.
 Dans la réalisation du mécanisme des \emph{checkpoints}, l'utilisateur doit donner des contraintes,
-sinon les contraintes par défaut seront utilisées. Ces contraintes sont par exemple le temps de latence maximum de \emph{checkpoint},
-la largeur des données (32 ou 64 bits) et la largeur de l'ID de \emph{checkpoint}.
+sinon des contraintes par défaut seront utilisées. Ces contraintes sont par exemple le temps de latence maximum de réponse du DUT ou
+la largeur des données (32 ou 64 bits).
 
-Ces étapes d'exécution ont été effectués pour deux IPs générées par AUGH. La première IP a été créée
-afin de valider le démonstrateur construit. Une tâche simple est exécutée avec cette IP pour observer
-si l'architecture matérielle et logicielle marchent bien. La deuxième IP est IDCT, une IP utilisée
+Ces étapes d'exécution ont été effectuées pour deux DUT générées par AUGH. Le premier DUT a été créé
+afin de valider le démonstrateur construit. Une tâche simple est exécutée avec ce DUT pour observer
+si les architectures matérielle et logicielle marchent bien. Le deuxième DUT est IDCT, une IP utilisée
 dans le test de l'outil de HLS AUGH.
 
 \subsection{Validation de la commutation de contexte pour un IP simple}
 
-Un IP simple qui exécute les additions avec une boucle a été crée afin de valider la fonctionnalité de 
+Un IP simple a été crée afin de valider la fonctionnalité de 
 l'architecture proposée dans le stage. Un logigramme qui explique l'algorithme de l'IP simple est présenté dans la Figure
 \ref{fig:flow_vecteur}. Cette IP reçoit deux entrées de 32-bit et génère une sortie de 32-bit.
 
@@ -377,9 +378,8 @@ Le résultat quantitatif du test est présenté dans la Table \ref{table:result1
 
 \subsection{Validation de la commutation de contexte pour IDCT 2-D}
 
-L'application IDCT\footnote{IDCT : Inverse Discrete Cosine Transform} 2-D est un sous-ensemble de «suite de test» CHStone
-qui est souvent utilisé pour valider l'outil de synthèse logique. L'outil de HLS AUGH génère
-une IP en HDL à partir de cette application. L'IDCT 2-D a été implémenté sur FPGA et
+L'application IDCT\footnote{IDCT : Inverse Discrete Cosine Transform} 2-D est un sous-ensemble de la suite de test CHStone
+qui est utilisé pour tester les outil de synthèse logique\cite{Hara2009}. L'IDCT 2-D a été implémenté sur FPGA et
 il est validé avec succès. Le résultat quantitatif du test est présenté dans la Table \ref{table:result2}.
 
 \begin{table}[h]
@@ -403,31 +403,31 @@ il est validé avec succès. Le résultat quantitatif du test est présenté dan
 
 \section{Analyse et discussion}
 
-Avec les tests des deux IPs, l'IP simple et IDCT, le mécanisme des \emph{checkpoints} proposé a été validé avec succès.
+Avec les tests des deux DUT, l'IP simple et l'IDCT, le mécanisme des \emph{checkpoints} proposé a été validé avec succès.
 Les paramètres d'evaluation des performances sont présentés dans les tables \ref{table:result1} et \ref{table:result2}.
-Les largeurs des données et de l'ID de \emph{checkpoint} utilisées sont 32 bits pour les deux IPs.
+La largeur des données utilisée est de 32 bits pour les deux IPs.
 
 Initialement, le système sans mécanisme des \emph{checkpoints} était fréquencé à 100 MHz.
-Dans la première validation avec un IP simple, la fréquence du système avec le mécanisme des
-\emph{checkpoints} obtenue est 100 MHz. Comme cette IP est petite et simple, le mécanisme
+Dans la première validation avec l'IP simple, la fréquence du système avec le mécanisme des
+\emph{checkpoints} obtenue est 100 MHz. Comme cette IP est de taille reduite, le mécanisme
 implémenté ne génère pas de chute des performances.
-Pour la deuxième validation avec l'IP IDCT, la validation des erreurs en fréquence de 100 MHz.
-La fréquence de travail est diminuée jusqu'il n'y a plus d'erreur. Cette fréquence sans erreur est trouvé entre 80 et 90 MHz.
+Pour la deuxième validation avec l'IP IDCT, des erreurs apparaissait à fréquence de 100 MHz.
+La fréquence de travail a été diminuée jusqu'il n'y a plus d'erreur. Cette fréquence se trouve entre 80 et 90 MHz.
 
-L'hypothèse retenue est le mécanisme des \emph{checkpoints} diminue les performances de l'IP. La diminution est plus important
-si l'application est plus complexe ou plus grande. Cette diminution est normale tant que les performances ne sont pas diminuées
-de manière significative. La fréquence de travail trouvée n'est pas exacte car la validation est effectuée pour les fréquences de
-50 MHz à 100 MHz avec un écart de 10 MHz. 
+L'hypothèse retenue est que le mécanisme des \emph{checkpoints} diminue les performances de l'IP. La diminution est plus important
+si l'application est plus complexe ou plus grande. La fréquence de travail trouvée n'est pas exacte 
+car la validation a été effectuée par palier de 10 MHz.
 
-Les nombres des \emph{checkpoints} sont déterminées par le temps de latence donné par l'utilisateur. Pour l'IP simple,
+Le nombre de \emph{checkpoints} est déterminé par un temps de latence donné par l'utilisateur lors de la synthèse par AUGH. Pour l'IP simple,
 le nombre des \emph{checkpoints} est 4 avec un temps de latence maximum de 1000 cyles. 
-Pour l'IDCT, le temps de latence maximum utilisé est 280 cycles pour obtenir 5 \emph{checkpoint}.
+Pour l'IDCT, le temps de latence maximum utilisé est 280 cycles pour obtenir 5 \emph{checkpoints}.
 Le but d'avoir plusieurs \emph{checkpoints} dans ce test est simplement pour valider si chaque point est accessible et sans erreur.
 Après avoir effectué le test, tous les \emph{checkpoints} sont validés pour la récupération et la restauration de contexte.
 
 L'exécution de l'IP simple peut être effectué pendant 14 cycles comme c'est une petite application. Par contre, l'IDCT
-va prendre 1083 cycles pour son exécution. Le temps d'extraction de contexte pour l'IP simple est entre 19 et 21 cycles
-selon le \emph{checkpoint} associé. Pour l'IDCT, le temps d'extraction est toujours constant, 1083 cycles. Le temps d'attente
-d'un \emph{checkpoint}, $t_c$, n'est pas déterministe car la distance à un \emph{checkpoint} est variable selon la tâche. 
+va durer 1083 cycles. Le temps d'extraction de contexte pour l'IP simple est entre 19 et 21 cycles
+selon le \emph{checkpoint} associé. Pour l'IDCT, le temps d'extraction est toujours constant, 132 cycles. Le temps d'attente
+d'un \emph{checkpoint}, $t_c$, n'est pas déterministe car la distance à un \emph{checkpoint} est variable selon
+l'état de la tâche lorsque elle reçoit une demande de commutation. 
 
 

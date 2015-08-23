@@ -2,12 +2,12 @@
 \label{chap:concep}
 \OnehalfSpacing
 
-Le chapitre de conception va aborder des idées principales liées au système de la validation de la commutation de contexte sur FPGA.
-Comme expliqué dans la partie Introduction et la description du sujet de stage 
+Le chapitre de conception va aborder les idées principales liées au système de validation de la commutation de contexte sur FPGA.
+Comme expliqué dans l'Introduction et la description du sujet de stage 
 (cf. Section \ref{sec:sujet}), la méthode des \emph{checkpoints} 
 est réalisée en ajoutant un greffon à l'outil de HLS AUGH.
 Durant la génération de l'IP à partir d'un code C, ce greffon intègre un mécanisme à l'IP
-qui va permettre d'effectuer les étapes de la commutation de contexte. Le mécanisme
+qui va ajouter la capacité de commutation de contexte. Le mécanisme
 ajouté ne doit pas modifier le fonctionnement de l'IP ni diminuer sa performance de manière significative.
 
 Un démonstrateur qui permet de lancer l'exécution de l'IP généré par AUGH et de réaliser la commutation
@@ -16,8 +16,8 @@ On adapte l'architecture générale de la plateforme de la validation d'IP
 proposée dans le projet 3i5\cite{Brisebard2015, Wicaksana2015} dans le travail du stage car
 un flot d'exécution similaire est utilisé. 
 
-Dans le cadre du stage, un SoC programmable conçue par Xilinx est utilisé.
-Un poste de travail qui fonctionne comme un serveur avec un outil de backend Xilinx est utilisé pour générer le fichier de configuration de FPGA. 
+Dans le cadre du stage, un SoC programmable est utilisé.
+Un poste de travail qui fonctionne comme un serveur avec un outil de backend est utilisé pour générer le fichier de configuration de FPGA. 
 Un stockage de réseau est mis en place afin de faciliter le transfert de données.
 L'utilisateur peut accéder à ce démonstrateur en connectant son poste de travail au réseau.
 L'architecture du démonstrateur de la commutation de contexte est visible sur la Figure \ref{fig:system}.
@@ -34,24 +34,24 @@ La conception de l'architecture matérielle et logicielle sont expliquée aux pr
 \section{Conception matérielle}
 \label{sec:concephard}
 
-La conception matérielle du système explique la partie matérielle du démonstrateur de la commutation de contexte.
-Sa plateforme principale est un SoC programmable conçu par Xilinx. Ce type de plateforme
-combine un processeur ARM et un FPGA dans la même puce avec un bus de communication interne. L'avantage de cette plateforme
-est qu'elle est capable de reconfigurer la partie FPGA à partir du processeur ARM, ce qui nous donne une plateforme plus autonome
+Cette partie expose la partie matérielle du démonstrateur de la commutation de contexte.
+La plateforme principale est un SoC programmable. Ce type de plateforme
+combine un processeur et un FPGA dans la même puce avec un bus de communication interne. L'avantage de cette plateforme
+est qu'elle est capable de reconfigurer la partie FPGA à partir du processeur, ce qui nous donne une plateforme plus autonome
 par rapport aux autres familles de FPGA.
 
-L'IP généré par AUGH, qui sera testée par le démonstrateur, peut être programmée dans la partie FPGA grâce à l'outil de backend Xilinx.
-Cet outil va transformer l'ensemble de l'IP en HDL en un fichier de configuration \emph{bitstream}, qui sera
-chargé dans FPGA. Le chargement de \emph{bitstream} sera effectué par le processeur ARM du SoC programmable.
-L'outil de backend Xilinx est installé sur un autre poste de travail en raison de la limitation de ressource du processeur ARM.
+L'IP généré par AUGH, qui sera testée par le démonstrateur, peut être programmée dans la partie FPGA grâce à l'outil de backend.
+Cet outil va transformer l'ensemble de l'IP en HDL en un fichier de configuration (\emph{bitstream}), qui sera
+chargé dans le FPGA. Le chargement du \emph{bitstream} sera effectué par le processeur du SoC.
+L'outil de backend est installé sur un autre poste de travail en raison de la limitation de ressource du processeur embarqué.
 
-La communication entre le processeur ARM et le FPGA est effectuée au travers d'un bus de communication AXI.
-Le bus AXI est un bus de communication conçu par ARM pour les produits SoC Xilinx. 
-Il permet d'envoyer les données du processeur aux IPs qui implémentent le protocole AXI dans FPGA.
+La communication entre le processeur et le FPGA est effectuée au travers d'un bus de communication interne.
+Il permet d'envoyer les données du processeur aux IP qui implémentent le même protocole de communication
+dans le FPGA.
 
-Afin de faciliter la validation de l'IP généré par AUGH, des IPs sont ajoutées à l'architecture matérielle du système.
-Les IPs ajoutées notamment sont les IPs pour la gestion d'entrées-sorties, la commutation de contexte et l'évaluation
-des performances du système. Ces IPs implémentent le protocole AXI pour que le processeur ARM puisse
+Afin de faciliter la validation de l'IP généré par AUGH, d'autres IP sont ajoutées à l'architecture matérielle du système.
+Sont notamment ajoutées des IP pour la gestion d'entrées-sorties, la commutation de contexte et l'évaluation
+des performances du système. Elles implémentent le protocole de communication pour que le processeur puisse
 commander ou transférer les données.
 Le schéma de l'architecture matérielle du démonstrateur est présenté
 dans la Figure \ref{fig:concephard}.
@@ -67,13 +67,13 @@ dans la Figure \ref{fig:concephard}.
 \section{Conception logicielle}
 \label{sec:concepsoft}
 
-Comme la plateforme utilisée est constitué d'un processeur ARM, il est possible d'installer un système d'exploitation.
-Le système d'exploitation nous permettra d'utiliser les drivers offerts selon la distribution saisie. 
-Le système d'exploitation choisi doit être léger et il doit permettre d'intégrer des bibliothèques de logiciels.
+Comme la plateforme utilisée est constitué d'un processeur, il est possible d'utiliser un système d'exploitation.
+Le système d'exploitation nous permettra d'utiliser les drivers offerts selon la distribution choisie. 
+Le système d'exploitation doit être léger et il doit permettre d'intégrer des bibliothèques de logiciels.
 La conception de l'architecture logicielle repose sur la conception du système d'exploitation et les
 bibliothèques de logiciels intégrés ainsi que tous ses drivers. 
 
-Les bibliothèques de logiciels sont ajoutées au système d'exploitation afin de compléter les drivers qui sont déjà offerts. 
+Des bibliothèques de logiciels sont développées puis ajoutées au système d'exploitation afin de compléter les drivers offerts. 
 Elles permettent l'accès à plusieurs drivers pour effectuer certaines fonctions.
 Au niveau logiciel, plusieurs fonctions de base sont nécessaires pour réaliser le démonstrateur de la commutation
 de contexte. Ces fonctions sont les suivants :
@@ -85,14 +85,14 @@ de contexte. Ces fonctions sont les suivants :
 \end{itemize}
 Les fonctions timer et post-processing sont importantes dans la réalisation de l'objectif de stage qui est l'évaluation des performances
 du mécanisme proposé. Les bibliothèques de logiciels sont développées en langage C et intégrées dans le système d'exploitation.
-Après l'intégration, l'utilisateur peut appeler les fonctions, soit avec le script bash, soit par une ligne de commande.
+Après l'intégration, l'utilisateur peut appeler les fonctions, soit avec un script bash, soit par une ligne de commande.
 
-L'ensemble des fonctions ci-dessus est utilisé pour lancer la validation de la commutation de contexte.
+L'ensemble des fonctions ci-dessus est utilisé pour la validation de la commutation de contexte.
 Afin de créer un flot d'exécution précis et répétable, une application principale est construite en script bash. 
-Cette application sera chargée de lancement du démonstrateur, à partir d'un IP en RTL jusqu'à l'obtention du résultat de la validation.
+Cette application sera chargée du lancement du démonstrateur, à partir d'un IP en RTL jusqu'à l'obtention du résultat de la validation.
 L'utilisateur peut lancer toutes les exécutions à partir de cette application principale incluant la génération de fichier
-\emph{bitstream} dans l'outil Xilinx.
-Le schéma de l'architecture logicielle du démonstrateur expliquée est présenté dans la Figure \ref{fig:concepsoft}.
+\emph{bitstream} par l'outil de backend.
+Le schéma de l'architecture logicielle du démonstrateur est présenté dans la Figure \ref{fig:concepsoft}.
 
 \begin{figure}[h]
 	\centering
@@ -102,27 +102,24 @@ Le schéma de l'architecture logicielle du démonstrateur expliquée est présen
 	\vspace{-2mm}
 \end{figure}
 
+L'application, les bibliothèques de logiciels et les drivers sont intégrés dans
+le système d'exploitation sur SoC. L'utilisateur avec son poste de travail peut accéder
+l'architecture logicielle à travers un canal SSH\footnote{\emph{Secure Shell}, un protocole de communication sécurisé},
+ce qui permet à l'utilisateur d'appeler l'application principale en script bash lors de la validation de mécanisme de \emph{context switch}.
+Le canal de communication SSH est aussi utilisé pour faciliter la génération du fichier \emph{bitstream}.
+Il permet à l'application principale de commander l'outil de backend installé dans un
+autre poste de travail afin de générer le fichier \emph{bitstream}.
+
 \section{Interaction entre l'architecture matérielle et logicielle}
 
-Une illustration qui visualise l'interaction entre l'architecture matérielle 
+Dans le cadre du stage, les architectures matérielle et logicielle sont
+développées ensemble afin de réaliser un système complet,
+sauf l'IP généré par AUGH et des drivers qui sont déjà offerts dans
+le système d'exploitation.
+L'interaction entre l'architecture matérielle et l'architecture logicielle est mise en place
+pour que les deux architectures construisent un système propre.
+Une illustration de l'interaction entre l'architecture matérielle 
 et l'architecture logicielle du système est présentée dans la Figure \ref{fig:interaction}.
-De haut niveau, l'architecture logicielle est capable d'envoyer les commandes ou
-d'échanger les données avec l'architecture matérielle.
-L'architecture logicielle du système est constitué d'une application, des bibliothèques de logiciels et des drivers
-intégrés dans le système d'exploitation installé. Alors que l'architecture matérielle
-est constitué de l'IP généré par AUGH et des autres IPs ajoutées dans le FPGA.
-
-Les commandes et les échanges de données sont pilotés par l'application. Cette application
-contient le flot de la validation du mécanisme \emph{context switch} implémenté.
-Elle utilisera les bibliothèques de logiciels et les drivers afin d'exécuter les fonctions souhaitées.
-Les drivers qui sont déjà présents dans le système d'exploitation permettra l'accès au
-matériel.
-
-D'autre part, toutes les IPs dans le FPGA sont intégrées dans un \emph{wrapper} grâce
-à l'outil de Xilinx. Ce \emph{wrapper} de matériel est généré dans le projet de l'architecture matérielle
-comme le composant \og top-level \fg de tous les autres composants.
-Le \emph{wrapper} généré va permettre la transformation depuis l'ensemble des IPs en un fichier \emph{bitstream} qui sera
-chargé sur le FPGA.
 
 \begin{figure}[h]
 	\centering
@@ -131,3 +128,21 @@ chargé sur le FPGA.
 	\label{fig:interaction}
 	\vspace{-2mm}
 \end{figure}
+
+L'architecture logicielle est capable d'envoyer des commandes ou
+d'échanger des données avec l'architecture matérielle.
+L'architecture logicielle du système est constitué d'une application, des bibliothèques de logiciels et des drivers
+intégrés dans le système d'exploitation installé. Alors que l'architecture matérielle
+est constitué de l'IP généré par AUGH et des autres IPs ajoutées dans le FPGA.
+
+Commandes et échanges de données sont pilotés par l'application. Cette application
+contient le flot de la validation du mécanisme de \emph{context switch} implémenté.
+Elle utilisera les bibliothèques de logiciels et les drivers afin d'exécuter les fonctions souhaitées.
+Les drivers qui sont déjà présents dans le système d'exploitation permettront l'accès au
+matériel.
+
+D'autre part, toutes les IPs dans le FPGA sont intégrées dans un \emph{wrapper} grâce
+à l'outil de backend. Ce \emph{wrapper} matériel est généré dans le projet de l'architecture matérielle
+comme le composant \emph{top-level} de tous les autres composants.
+Le \emph{wrapper} généré va permettre la transformation de l'ensemble des IP en un fichier \emph{bitstream} qui sera
+chargé sur le FPGA.
