@@ -1,16 +1,15 @@
 \chapter{Les principes de base technologiques}
 \label{chap:principe}
 \OnehalfSpacing
-\section{\emph{Field Programmable Gate Array (FPGA)}}
+\section{\emph{Field-Programmable Gate Array (FPGA)}}
 \label{sec:fpga}
-Les FPGA (Field Programmable Gate Arrays), traduit en français par circuits prédiffusés 
+Les FPGA (Field-Programmable Gate Arrays), traduit en français par circuits prédiffusés 
 programmables\cite{hubinweb},
-sont des composants VLSI\footnote{VLSI : Very Large Scale Integration, est une technologie de circuit intégré dont la densité d'intégration
-permet de supporter plus de 100,000 composants électroniques sur une même puce}  
+sont des composants \gls{VLSI}  
 entièrement reconfigurables. Contrairement aux circuits prédiffusés conventionnels, les circuits
 prédiffusés programmables ne demandent pas de fabrication spéciale en usine, ni de systèmes de 
 développement coûteux. Inventés par Ross Freeman, le co-fondateur de la société Xilinx en 1985, les FPGA, dans la famille
-des ASICs, se situent entre les réseaux logiques programmables et les prédiffusés. 
+des \glspl{ASIC}, se situent entre les réseaux logiques programmables et les prédiffusés. 
 
 Les circuits FPGA sont constitués d'une matrice de blocs logiques configurables permettant de réaliser des fonctions
 combinatoires et des fonctions séquentielles. Tout autour de ces blocs logiques, on trouve des blocs entrées/sorties
@@ -18,18 +17,16 @@ dont le rôle est de gérer les entrées-sorties réalisant l'interface avec les
 L'ensemble est relié par un réseau d'interconnexions programmable, présenté dans la Figure \ref{fig:layoutfpga}. 
 
 Un bloc logique est de manière générale constitué d'une table de correspondance
-(\emph{Look-Up-Table} ou LUT) et d'une bascule (\emph{Flip-Flop}). 
-La LUT sert à implémenter
+(\emph{Look-Up-Table} ou \gls{LUT}) et d'une bascule (\emph{Flip-Flop}). 
+La \gls{LUT} sert à implémenter
 des équations logiques ayant généralement 4 à 6 entrées et une sortie. 
 Elle peut toutefois être utilisée comme une petite
 mémoire, un multiplexeur ou un registre à décalage. 
 Le registre permet de mémoriser un état (machine séquentielle) ou
 de synchroniser un signal (pipeline).
-La configuration du circuit est mémorisée sur la couche réseau SRAM (Static Random-Access Memory) 
-et stockée dans une ROM (Read-Only Memory) externe. 
-Un dispositif interne permet à chaque mise sous tension de charger la SRAM interne à partir de la ROM. 
-Ainsi on conçoit aisément qu'un même circuit puisse être exploité successivement avec des ROM 
-différentes puisque sa programmation interne n'est jamais définitive.
+La configuration du circuit est mémorisée dans une mémoire \gls{SRAM} 
+à chaque mise sous tension. Comme la programmation est dynamique,
+cette configuration doit être stockée dans un élément externe (par exemple une mémoire \gls{ROM} ou carte \gls{SD}).
 
 \begin{figure}[h]
 	\centering
@@ -41,7 +38,7 @@ différentes puisque sa programmation interne n'est jamais définitive.
 
 La configuration du circuit dans FPGA est possible grâce à un fichier de configuration, connu sous le nom
 \emph{bitstream}. Un fichier \emph{bitstream} est un fichier binaire qui contient les données de configuration
-de FPGA. Ce fichier est chargé au FPGA afin de programmer le circuit souhaité.
+de FPGA. Ce fichier est chargé dans le FPGA afin de programmer le circuit souhaité.
 Le \emph{bitstream} est généré à partir d'une description fonctionnelle de circuit.
 Cette description peut être écrite en \emph{Hardware Description Language} ou HDL, normalement
 en langage Verilog ou VHDL. Le flot de programmation des FPGAs à partir d'un code en HDL est présenté dans la Figure \ref{fig:fpgaflow}. 
@@ -55,8 +52,8 @@ en langage Verilog ou VHDL. Le flot de programmation des FPGAs à partir d'un co
 \end{figure}
 
 La synthèse logique est une étape qui consiste à compiler la description fonctionnelle d'un circuit à l'aide d'un outil de synthèse et
-d'une bibliothèque de cellules logiques pour générer en sortie une description en porte logiques (\emph{gate-level netlist}).
-\emph{Technology Mapping} va associer le \emph{netlist} généré aux ressources spécifiques: LUT, bascule, BRAM, etc.
+d'une bibliothèque de cellules logiques pour générer en sortie une description en portes logiques (\emph{gate-level netlist}).
+L'étape de «\emph{Technology Mapping}» va associer la \emph{netlist} générée aux ressources spécifiques: LUT, bascule, BRAM, etc.
 Ces ressources sont mises en place et interconnectées sur le FPGA à l'étape Placement et Routage (\emph{Routing}).
 Enfin, le fichier de configuration est généré à partir des informations obtenues aux étapes précédentes.
 
@@ -83,24 +80,24 @@ Ceci permet d'obtenir des systèmes reconfigurables - par exemple un processeur 
 les instructions changent dynamiquement en fonction des besoins.
 
 Les FPGA modernes sont assez vastes et contiennent suffisamment de mémoire pour être configurés 
-pour héberger un cœur de processeur ou un DSP, afin d'exécuter un logiciel. 
+et héberger un cœur de processeur ou un DSP, afin d'exécuter un programme. 
 On parle dans ce cas de processeur soft-core, par opposition aux microprocesseurs hard-core enfouis dans le silicium. 
-Aujourd'hui, les fabricants de FPGA intègrent même un ou plusieurs cœurs de processeur hard-core 
+Les fabricants de FPGA intègrent même un ou plusieurs cœurs de processeur hard-core 
 sur un même composant afin de conserver les ressources logiques configurables du composant. 
 Ceci n'exclut pas l'utilisation de processeur soft-core possédant de nombreux avantages. 
-On tend donc vers des « Systems On Chip (SoC) », comme pour le microcontrôleur il y a quelques décennies, 
+On tend donc vers des Systems On Chip (\gls{SoC}), comme pour le microcontrôleur il y a quelques décennies, 
 avec en plus de la logique configurable selon l'utilisateur. Une des familles FPGAs SoC
 qui intègrent un processeur hard-core et soft-core dans le même puce est Zynq-7000\cite{ug585} conçu par Xilinx.
 
 \section{Synthèse haut niveau ou \emph{High Level Synthesis} (HLS)}
 \label{sec:hls}
-La synthèse haut niveau est un processus qui interprète une spécification au niveau algorithmique en architecture
-au niveau transferts de registres (RTL) pour la réalisation éventuelle de matériel\cite{Vijay1996}.
+La synthèse haut niveau est un processus qui interprète une spécification au niveau algorithmique (un programme) en une architecture
+au niveau transferts de registres (\gls{RTL}) pour la réalisation d'un circuit\cite{Vijay1996}.
 Il est également appelé \emph{behavioral synthesis} ou \emph{algorithmic synthesis}.
 
-Le but de la synthèse haut niveau est l'amélioration de la productivité de la conception 
-d'IP dont l'évolution ne suit pas la capacité d'intégration\cite{mullercours}. Cette capacité d'intégration
-est déclarée par la loi de Moore qui avait prédit un doublement de la capacité de calcul chaque 18 mois.
+Le but de la synthèse haut niveau est d'améliorer la productivité de la conception 
+de composant de traitement. En effet, la productivité ne suit pas la capacité d'intégration. Cette capacité d'intégration
+respecte la loi de Moore qui avait prédit un doublement de la capacité de calcul chaque 18 mois.
 La synthèse haut niveau a plusieurs avantages :
 \begin{itemize}
 	\item\ réduction du temps de conception,
@@ -110,8 +107,17 @@ La synthèse haut niveau a plusieurs avantages :
 
 L'outil de HLS transforme une spécification haut niveau à une implémentation. Il génère une architecture
 afin de réaliser la spécification efficacement. En plus des interfaces de communication et des mémoires,
-l'architecture générée est décrit au niveau RTL et elle est constituée d'un \emph{datapath} (registres, multiplexeurs,
-unités fonctionnelles et bus) et d'un contrôleur selon les besoins et les contraintes.
+l'architecture générée est décrite au niveau RTL et elle est constituée d'un chemin de données ou partie opérative (registres, multiplexeurs,
+unités fonctionnelles et bus) et d'une partie contrôle selon les besoins et les contraintes. Un schéma représente
+l'architecture générée par l'outil de HLS se trouve dans la Figure \ref{fig:pcpo}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.65\textwidth]{pcpo}
+	\caption{Schéma PC-PO}
+	\label{fig:pcpo}
+	\vspace{-2mm}
+\end{figure}
 
 Les tâches exécutées par un outil de synthèse haut niveau à partir d'une description haut niveau,
 d'une bibliothèque d'élements RTL et des contraintes sont les suivantes :
@@ -144,31 +150,30 @@ d'une bibliothèque d'élements RTL et des contraintes sont les suivantes :
 \end{figure}
 
 La synthèse haut niveau est commencée par la compilation de la spécification fonctionnelle.
-Cette étape transforme l'entrée à une représentation formelle. Ce modèle formel produit par la compilation
+Cette étape transforme l'entrée à une représentation intermédiaire. Ce modèle produit par la compilation
 expose les dépendances des données et des contrôles entre les opérations. Les dépendances des données et des contrôles sont représentées
-par un graph de flux de données (DFG), un graph de flux de contrôle (CFG) ou un graph de flux des contrôles et données (CDFG).
+par un graphe de flux des contrôles et données (CDFG).
 
-L'allocation défini le type et le nombre des ressources matérielles requises pour répondre aux contraintes de conception.
+L'allocation définit le type et le nombre des ressources matérielles requises pour répondre aux contraintes de conception.
 Ces éléments sont pris de la bibliothèque d'éléments RTL.
 En fonction de l'outil de HLS, plusieurs éléments sont ajoutés pendant l'ordonnancement et l'assignation.
-Par exemple, les éléments connectivité (bus ou connexion point à point) peuvent être ajoutés avant ou
+Par exemple, les éléments de connectivité (bus ou connexion point à point) peuvent être ajoutés avant ou
 après l'assignation et l'ordonnancement de tâches.
 
 Toutes les opérations requises dans la spécification doivent être ordonnancées en cycles.
-En fonction de l'élément fonctionnel où l'opération est défini, elle peut être ordonnancée
+En fonction de l'élément fonctionnel où l'opération est définie, elle peut être ordonnancée
 en un cycle ou plusieurs cycles d'horloge. L'ordonnancement est normalement implémenté avec deux types de contraintes :
 l'ordonnancement avec les contraintes de ressources et l'ordonnancement avec les contraintes de temps.
 
-Tous les variables avec valeur doit être assignées à une unité de stockage. Par contre, plusieurs variables
-avec durée de vie exclusive ou non-chevauchant peuvent être assignés aux même unités de stockage.
+Toutes les variables avec valeur doivent être assignées à une unité de stockage. Par contre, plusieurs variables
+avec une durée de vie exclusive ou non-chevauchant peuvent être assignés aux même unités de stockage.
 Chaque opération dans la spécification doit être assignée à une des unités fonctionnelles capables de l'exécuter.
 L'optimisation est faite s'il y a plusieurs unités avec la capacité similaire.
-L'assignation de stockage et d'unité fonctionnelle dépend aussi de l'assignation de connexion (réalisé
+L'assignation de stockage et d'unités fonctionnelles dépend aussi de l'assignation de connexion (réalisé
 par les unités de connexion comme bus ou multiplexeur).
 
-Après toutes les étapes précédentes sont réalisées, le but de la génération de l'architecture RTL est d'appliquer toutes les conceptions
-effectuées et de générer un modèle RTL. L'architecture généré est constituée de deux éléments principales : un contrôleur
-et un \emph{datapath}. Le contrôleur est modélisé par un \emph{finite state machine} (FSM). Le \emph{datapath} est
+Les différentes étapes précédentes constituent la synthèse haut niveau. L'architecture générée est constituée de deux éléments principaux : une partie contrôle
+et une partie opérative. La partie contrôle est modélisée par une automate d'états finis (FSM). La partie opérative est
 l'interconnexion des éléments comme les unité fonctionnelles, éléments de stockage, etc.
 
 \subsubsection*{L'outil de HLS AUGH}
@@ -179,21 +184,21 @@ Adrien Prost-Boucle, un chercheur postdoctoral au laboratoire TIMA,
 AUGH est capable de générer une description générique VHDL à partir
 d'une application écrite en langage C. 
 
-L'outil de HLS AUGH développé comme un outil libre et gratuit (\emph{free and open-source}).
-Il est un outil de ligne de commande conçu pour un système de Linux et il contient 
+L'outil de HLS AUGH est développé comme un outil libre et gratuit (\emph{free and open-source}).
+C'est un outil lancé par une ligne de commande et conçu pour un système Linux. 
 Les avantages de l'outil de HLS AUGH sont :
 \begin{itemize}
 	\item
 	
-	le \emph{design space exploration}\footnote{l'exploration des possibilités de conception avant l'implémentation} automatique et rapide,
+	l'exploration de l'espace de conception automatique et rapide,
 	
 	\item
 	
-	traitement avec les contraintes de ressources strict (nombre de LUT, bascule, BRAM, etc),
+	respect strict des contraintes de ressources (nombre de LUT, bascule, BRAM, etc),
 	
 	\item 
 	
-	traitement avec les contraintes de fréquence,
+	respect des contraintes de fréquence,
 	
 	\item 
 	
@@ -207,35 +212,39 @@ Les avantages de l'outil de HLS AUGH sont :
 
 \section{Commutation de contexte (\emph{Context-Switch}) sur FPGA}
 \label{sec:contextswitch}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-En informatique, la commutation de contexte ou \emph{context-switch} consiste à sauvegarder l'état d'un processus pour restaurer à la place celui d'un autre
+En informatique, la commutation de contexte ou \emph{context-switch} 
+consiste à sauvegarder l'état d'un processus pour restaurer à la place celui d'un autre
 dans le cadre d'ordonnancement d'un système d'exploitation multitâche.
 Dans les applications sur les FPGAs moderne, le mécanisme similaire a été envisagé. La commutation de contexte sur FPGA
-permet d'arrêter une tâche programmé dans le FPGA et de continuer l'autre tâche à la volée.
+permet d'arrêter une tâche programmée dans le FPGA et de continuer une autre tâche à la volée.
 
-Le principe de la commutation de contexte est la récupération et la restauration de contexte de la tâche configurée. 
-Le contexte est les données dans les registres et le compteur de programme à un moment donné.
+Le principe de la commutation de contexte repose sur la récupération et la restauration de contexte de la tâche configurée. 
+Le contexte correspond aux données dans les registres et le compteur de programme à un moment donné.
 Sur un FPGA, la commutation de contexte est effectuée entièrement en matériel. L'état du circuit est enregistré
-sous la forme d'un contexte et sera restauré lorsque la tâche est continuée.
+sous la forme d'un contexte et sera restauré lorsque la tâche est continuée. 
+Avant la restauration du contexte, le FPGA est reconfiguré avec la tâche correspondant au contexte car le contexte
+ne contient pas les données de configuration.
 
-Dans le cadre de sa thèse, M. Alban Bourge a développé un mécanisme qui permet la récupération de contexte aux points de contrôles.
-Un point de contrôle ou \emph{checkpoint} est défini comme un état d'une tâche où la commutation de contexte est 
-autorisé\cite{Bourge2015}. Le concept de \emph{checkpoint} est utilisé principalement dans les applications tolérantes aux erreurs. Le contexte
-de l'application est sauvegardé à chaque fois qu'un \emph{checkpoint} est atteint. Lorsqu'il y a une erreur, le système est capable de restaurer
+Dans le cadre de sa thèse, M. Alban Bourge a développé un mécanisme qui permet 
+la récupération de contexte aux points de contrôles ou \emph{checkpoints}.
+Un point de contrôle est défini comme un état d'une tâche où la commutation de contexte est 
+autorisée\cite{Bourge2015}. Le concept de \emph{checkpoint} est utilisé principalement 
+dans les applications tolérantes aux erreurs. Le contexte
+de l'application est sauvegardé à chaque fois qu'un \emph{checkpoint} est atteint. 
+Lorsqu'il y a une erreur, le système est capable de restaurer
 l'état de l'application au \emph{checkpoint} sauvegardé.
-De même principe, la tâche est reprise à partir des \emph{checkpoints} après la restauration du contexte.
+Du même principe, la tâche est reprise à partir des \emph{checkpoints} 
+après la restauration du contexte.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%example of context switch explained here
 Un exemple de scénario d'une commutation de contexte sur FPGA est illustré dans la Figure \ref{fig:switch}.
 Une tâche (tâche 1) est configurée et exécutée dans un FPGA. Au milieu de l'exécution, la tâche est interrompue par
-une demande de l'arrêt de tâche.
+une demande de l'arrêt de tâche (demande de préemption).
 Le mécanisme proposé ne permet pas un arrêt de la tâche immédiatement. Par contre, elle continue l'exécution pendant
-le temps $t_c$ jusqu'un \emph{checkpoint} est atteint. Lorsque l'exécution est arrivée au \emph{checkpoint},
+le temps $t_c$ jusqu'à ce qu'un \emph{checkpoint} soit atteint. Lorsque l'exécution est arrivée au \emph{checkpoint},
 l'état du circuit est enregistré en récupérant le contexte. Après une reconfiguration du FPGA, le traitement de l'autre tâche (tâche 2)
-est effectué. Cette tâche est arrêté de même manière que la tâche 1. Lorsque la tâche est reprise, le FPGA
-est reprogrammé avec le \emph{bitstream} de tâche 1 et le contexte est restauré.
+est effectué. Cette tâche est arrêté de la même manière que la tâche 1. Lorsque la tâche est reprise, le FPGA
+est reprogrammé avec le \emph{bitstream} de tâche 1. La restauration du contexte permet de reprendre l'exécution
+de la tâche 1 là où elle avait été arrêtée.
 
 \begin{figure}[h]
 	\centering
@@ -245,11 +254,21 @@ est reprogrammé avec le \emph{bitstream} de tâche 1 et le contexte est restaur
 	\vspace{-2mm}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%context switch implementation dans le stage
-L'implémentation du mécanisme de la commutation de contexte classique est réalisée pendant la synthèse logique
-et placement-routage avec un outil de fabricant dont l'accès est très limité.
-Dans le cadre de stage, le mécanisme de la commutation de contexte proposé est implémenté à l'IP généré par AUGH
-pendant l'étape de synthèse haut niveau. Il est ajouté par un greffon intégré dans l'outil de HLS AUGH.
-Ceci est possible car AUGH est un outil libre et gratuit et il est extensible par des greffons.
+\section{Détermination des \emph{checkpoints}}
 
+Comme déjà expliqué dans la section précédente, la récupération
+de contexte (et sa restauration) n'est autorisée qu'aux certains points pendant l'exécution, ce qu'on
+appelle les \emph{checkpoints}. Du matériel est ajouté au composant de traitement
+pour que la récupération et la restauration de contexte soient possible (l'ajout de fonction
+commutation) aux \emph{checkpoints}. Au lieu de réaliser le composant de traitement commutable pendant la synthèse logique et
+le placement-routage avec un outil du fabricant de FPGA dont l'accès est très limité, 
+la solution proposée est de faire le composant durant l'étape de synthèse haut niveau\cite{Bourge2015}.
+
+Un programme a été ajouté à l'outil de HLS AUGH pour la détermination des \emph{checkpoints}.
+Le programme choisit les \emph{checkpoints} qui donnent la meilleure efficacité au niveau de ressource
+et de la taille de données et qui correspondent aux contraintes données 
+(temps de latence maximum, largeur de données, ...) par l'utilisateur.
+Le matériel qui permet d'effectuer la commutation de contexte est ajouté aux \emph{checkpoints}
+par l'outil de HLS AUGH.
+Ce mécanisme de la détermination des \emph{checkpoints} est indépendant de la technologie utilisée car elle
+est faite durant l'étape de synthèse haut niveau.

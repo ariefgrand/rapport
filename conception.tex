@@ -2,26 +2,29 @@
 \label{chap:concep}
 \OnehalfSpacing
 
-Le chapitre de conception va aborder les idées principales liées au système de validation de la commutation de contexte sur FPGA.
-Comme expliqué dans l'Introduction et la description du sujet de stage 
+Le chapitre de conception va aborder les idées principales liées 
+au système de validation de la commutation de contexte sur FPGA.
+Comme expliqué dans l'introduction et la description du sujet de stage 
 (cf. Section \ref{sec:sujet}), la méthode des \emph{checkpoints} 
-est réalisée en ajoutant un greffon à l'outil de HLS AUGH.
-Durant la génération de l'IP à partir d'un code C, ce greffon intègre un mécanisme à l'IP
-qui va ajouter la capacité de commutation de contexte. Le mécanisme
-ajouté ne doit pas modifier le fonctionnement de l'IP ni diminuer sa performance de manière significative.
+est réalisée en ajoutant un programme à l'outil de HLS AUGH.
+Durant la synthèse haut niveau, ce programme intègre une fonction
+commutable dans le composant. Le mécanisme ajouté ne doit pas modifier le fonctionnement 
+du composant de traitement ni diminuer sa performance de manière significative.
 
-Un démonstrateur qui permet de lancer l'exécution de l'IP généré par AUGH et de réaliser la commutation
-de contexte sera construit pendant le stage.
-On adapte l'architecture générale de la plateforme de la validation d'IP
-proposée dans le projet 3i5\cite{Brisebard2015, Wicaksana2015} dans le travail du stage car
-un flot d'exécution similaire est utilisé. 
+Un démonstrateur qui permet de lancer l'exécution et de réaliser la commutation
+de contexte dans un traitement sera construit pendant le stage.
+Le composant de traitement commutable sera programmé
+et ses performances sont évaluées par le démonstrateur.
+On adapte l'architecture générale de la plateforme de validation du composant de traitement
+proposée dans le projet 3i5 dans le travail du stage car un flot d'exécution similaire est utilisé.
 
-Dans le cadre du stage, un SoC programmable est utilisé.
-Un poste de travail qui fonctionne comme un serveur avec un outil de backend est utilisé pour générer le fichier de configuration de FPGA. 
-Un stockage de réseau est mis en place afin de faciliter le transfert de données.
+Dans le cadre du stage, un SoC programmable est utilisé comme la plateforme principale du démonstrateur.
+Un poste de travail qui fonctionne comme un serveur avec un outil de génération de configuration
+est utilisé pour générer le fichier de configuration de FPGA. 
+Un stockage sur le réseau est mis en place afin de faciliter le transfert de données.
 L'utilisateur peut accéder à ce démonstrateur en connectant son poste de travail au réseau.
 L'architecture du démonstrateur de la commutation de contexte est visible sur la Figure \ref{fig:system}.
-La conception de l'architecture matérielle et logicielle sont expliquée aux prochaines sections.
+La conception de l'architecture matérielle et logicielle est expliquée dans les sections suivantes.
 
 \begin{figure}[h]
 	\centering
@@ -36,21 +39,24 @@ La conception de l'architecture matérielle et logicielle sont expliquée aux pr
 
 Cette partie expose la partie matérielle du démonstrateur de la commutation de contexte.
 La plateforme principale est un SoC programmable. Ce type de plateforme
-combine un processeur et un FPGA dans la même puce avec un bus de communication interne. L'avantage de cette plateforme
+combine un processeur et un FPGA dans la même puce avec un bus de communication interne. L'avantage d'une telle plateforme
 est qu'elle est capable de reconfigurer la partie FPGA à partir du processeur, ce qui nous donne une plateforme plus autonome
 par rapport aux autres familles de FPGA.
 
-L'IP généré par AUGH, qui sera testée par le démonstrateur, peut être programmée dans la partie FPGA grâce à l'outil de backend.
-Cet outil va transformer l'ensemble de l'IP en HDL en un fichier de configuration (\emph{bitstream}), qui sera
+Le composant de traitement commutable, qui est testé par le démonstrateur, peut être programmée dans la partie 
+FPGA grâce à l'outil de génération de configuration (cf. page précédente).
+Cet outil transforme la description HDL du composant de traitement en un fichier de configuration (\emph{bitstream}), qui sera
 chargé dans le FPGA. Le chargement du \emph{bitstream} sera effectué par le processeur du SoC.
-L'outil de backend est installé sur un autre poste de travail en raison de la limitation de ressource du processeur embarqué.
+L'outil de génération de configuration est installé sur un autre poste de travail en raison de la limitation de ressource du processeur embarqué.
 
-La communication entre le processeur et le FPGA est effectuée au travers d'un bus de communication interne.
-Il permet d'envoyer les données du processeur aux IP qui implémentent le même protocole de communication
-dans le FPGA.
+La communication entre le processeur et le FPGA est effectuée à travers le bus de communication interne.
+Il permet d'envoyer les données du processeur aux composants de traitements programmés dans le FPGA.
+Ces composants de traitement doit intégrer une interface de communication
+qui supporte le protocole de bus.
 
-Afin de faciliter la validation de l'IP généré par AUGH, d'autres IP sont ajoutées à l'architecture matérielle du système.
-Sont notamment ajoutées des IP pour la gestion d'entrées-sorties, la commutation de contexte et l'évaluation
+Afin de faciliter la validation du composant de traitement commutable, des composants 
+annexes sont ajoutées à l'architecture matérielle du système.
+Sont notamment ajoutées des composants annexes pour la gestion des entrées-sorties, la commutation de contexte et l'évaluation
 des performances du système. Elles implémentent le protocole de communication pour que le processeur puisse
 commander ou transférer les données.
 Le schéma de l'architecture matérielle du démonstrateur est présenté
@@ -58,7 +64,7 @@ dans la Figure \ref{fig:concephard}.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.6\textwidth]{concephard}
+	\includegraphics[width=0.8\textwidth]{concephard}
 	\caption{Le schéma de l'architecture matérielle du démonstrateur}
 	\label{fig:concephard}
 	\vspace{-2mm}
@@ -83,38 +89,38 @@ de contexte. Ces fonctions sont les suivants :
 	\item\ fonction timer qui permet d'enregistrer le nombre de cycles,
 	\item\ fonction post-processing qui calcule la performance de l'IP.
 \end{itemize}
-Les fonctions timer et post-processing sont importantes dans la réalisation de l'objectif de stage qui est l'évaluation des performances
+Les fonctions timer et post-processing sont importantes dans la réalisation de l'objectif du stage qui est l'évaluation des performances
 du mécanisme proposé. Les bibliothèques de logiciels sont développées en langage C et intégrées dans le système d'exploitation.
 Après l'intégration, l'utilisateur peut appeler les fonctions, soit avec un script bash, soit par une ligne de commande.
 
 L'ensemble des fonctions ci-dessus est utilisé pour la validation de la commutation de contexte.
 Afin de créer un flot d'exécution précis et répétable, une application principale est construite en script bash. 
-Cette application sera chargée du lancement du démonstrateur, à partir d'un IP en RTL jusqu'à l'obtention du résultat de la validation.
+Cette application est chargée du lancement du démonstrateur, à partir d'un composant de traitement commutable en RTL jusqu'à l'obtention du résultat de la validation.
 L'utilisateur peut lancer toutes les exécutions à partir de cette application principale incluant la génération de fichier
-\emph{bitstream} par l'outil de backend.
+\emph{bitstream} par l'outil.
 Le schéma de l'architecture logicielle du démonstrateur est présenté dans la Figure \ref{fig:concepsoft}.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.7\textwidth]{concepsoft}
+	\includegraphics[width=\textwidth]{concepsoft}
 	\caption{Le schéma de l'architecture logicielle du démonstrateur}
 	\label{fig:concepsoft}
 	\vspace{-2mm}
 \end{figure}
 
 L'application, les bibliothèques de logiciels et les drivers sont intégrés dans
-le système d'exploitation sur SoC. L'utilisateur avec son poste de travail peut accéder
-l'architecture logicielle à travers un canal SSH\footnote{\emph{Secure Shell}, un protocole de communication sécurisé},
+le système d'exploitation sur SoC. L'utilisateur avec son poste de travail peut accéder à
+l'architecture logicielle à travers un canal \gls{SSH},
 ce qui permet à l'utilisateur d'appeler l'application principale en script bash lors de la validation de mécanisme de \emph{context switch}.
 Le canal de communication SSH est aussi utilisé pour faciliter la génération du fichier \emph{bitstream}.
-Il permet à l'application principale de commander l'outil de backend installé dans un
+Il permet à l'application principale de commander l'outil de génération de configuration installé dans un
 autre poste de travail afin de générer le fichier \emph{bitstream}.
 
 \section{Interaction entre l'architecture matérielle et logicielle}
 
 Dans le cadre du stage, les architectures matérielle et logicielle sont
 développées ensemble afin de réaliser un système complet,
-sauf l'IP généré par AUGH et des drivers qui sont déjà offerts dans
+sauf le composant de traitement commutable et des drivers qui sont déjà disponibles dans
 le système d'exploitation.
 L'interaction entre l'architecture matérielle et l'architecture logicielle est mise en place
 pour que les deux architectures construisent un système propre.
@@ -123,7 +129,7 @@ et l'architecture logicielle du système est présentée dans la Figure \ref{fig
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.5\textwidth]{interaction}
+	\includegraphics[width=0.8\textwidth]{interaction}
 	\caption{Interaction entre l'architecture matérielle et logicielle}
 	\label{fig:interaction}
 	\vspace{-2mm}
@@ -133,7 +139,7 @@ L'architecture logicielle est capable d'envoyer des commandes ou
 d'échanger des données avec l'architecture matérielle.
 L'architecture logicielle du système est constitué d'une application, des bibliothèques de logiciels et des drivers
 intégrés dans le système d'exploitation installé. Alors que l'architecture matérielle
-est constitué de l'IP généré par AUGH et des autres IPs ajoutées dans le FPGA.
+est constitué du composant de traitement commutable et les composants annexes dans le FPGA.
 
 Commandes et échanges de données sont pilotés par l'application. Cette application
 contient le flot de la validation du mécanisme de \emph{context switch} implémenté.
@@ -142,7 +148,7 @@ Les drivers qui sont déjà présents dans le système d'exploitation permettron
 matériel.
 
 D'autre part, toutes les IPs dans le FPGA sont intégrées dans un \emph{wrapper} grâce
-à l'outil de backend. Ce \emph{wrapper} matériel est généré dans le projet de l'architecture matérielle
+à l'outil de génération de configuration. Ce \emph{wrapper} matériel est généré dans le projet de l'architecture matérielle
 comme le composant \emph{top-level} de tous les autres composants.
 Le \emph{wrapper} généré va permettre la transformation de l'ensemble des IP en un fichier \emph{bitstream} qui sera
 chargé sur le FPGA.
